@@ -79,7 +79,7 @@ export const registerUser = async (data: {
   password?: string;
 }) => {
   try {
-    const response = await apiInstance.post("/register", {
+    const response = await apiInstance.post("/user/register", {
       jsonrpc: "2.0",
       method: "call",
       data: data,
@@ -159,3 +159,17 @@ export const changeUserPassword = async (data: {
   }
 };
 
+
+// http://localhost:8069/api/real-estate/ads/search
+export const fetchRealEstateAds = async (data:any) => {
+  return apiInstance.post("/real-estate/ads/search",{
+    "limit": 10,
+      "offset": 0,
+      "property_type": "",
+      "city": "",
+      "reason": "",
+      "price_min": "",
+      "price_max": ""
+    
+  });
+};
