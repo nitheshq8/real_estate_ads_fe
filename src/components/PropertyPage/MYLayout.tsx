@@ -7,13 +7,16 @@ import TrendingProperties from "./TrendingProperties";
 import PropertyTypeModal from "../PropertyType/PropertyTypeModal";
 import CreateAdModal from "./CreateAdModal";
 import CreateAdModalwithcity from "./CreateAdModalwithcity";
+import CreateAdModalWithAddIMg from "./createAdmodlawithadditlainmf";
+import { useRouter } from "next/navigation";
+import SharedLinksTable from "./SharedLinksTable";
 
 const MYLayout = ({ children }: any) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  const router = useRouter();
   useEffect(() => {
     const fetchProperties = async () => {
       setLoading(true);
@@ -55,31 +58,30 @@ const MYLayout = ({ children }: any) => {
           <h1 className="text-xl font-bold ml-2">Luxury Estates</h1>
         </div>
 
-        {/* Desktop Search */}
-        <div className="hidden md:flex flex-1 justify-center">
-          <input
-            type="text"
-            placeholder="Search properties"
-            className="border px-4 py-2 rounded-full w-1/3 outline-none"
-          />
-        </div>
+       
 
       {/* Desktop View (Hidden on Mobile) */}
-      <div className="hidden md:flex items-center space-x-4">
+      <div className="hidden md:flex items-center ">
         <input
           type="text"
           placeholder="Search properties"
-          className="border p-2 rounded-full w-64"
+          className="border p-2 mr-2 rounded-full w-64"
         />
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-full">
+        {/* <button className="bg-blue-600 text-white px-4 py-2 rounded-full">
           Explore
-        </button>
+        </button> */}
         {/* <button className="border border-blue-600 text-blue-600 px-4 py-2 rounded-full">
           List Your Property
         </button> */}
         <PropertyTypeModal/>
+       
+        <SharedLinksTable />
         <CreateAdModal/>
+        {/* <CreateAdModalWithAddIMg/> */}
         {/* <CreateAdModalwithcity/> */}
+         <div className="mb-4">
+       
+      </div>
       </div>
 
         {/* Mobile Menu Button */}
@@ -99,6 +101,7 @@ const MYLayout = ({ children }: any) => {
               </a>
             ))}
           </nav>
+          
         </aside>
 
         {/* Main Content */}
@@ -138,7 +141,7 @@ const MYLayout = ({ children }: any) => {
         {menuOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex">
             <div className="w-2/3 bg-white p-6 shadow-lg h-full">
-              <button onClick={() => setMenuOpen(false)} className="text-2xl absolute top-4 right-4">
+              <button onClick={() => setMenuOpen(false)} className="text-2xl absolute top-4 ml-[50%]">
                 <IoMdClose />
               </button>
               <nav className="mt-8 space-y-4">
@@ -147,7 +150,12 @@ const MYLayout = ({ children }: any) => {
                     {item}
                   </a>
                 ))}
+                  <CreateAdModal/>
+                 <SharedLinksTable />
+        <PropertyTypeModal/>
+      
               </nav>
+
             </div>
           </div>
         )}

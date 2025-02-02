@@ -12,51 +12,32 @@ interface PropertyFiltersProps {
   filters: Filters;
   setFilters: any;
 }
+const propertyTypes = [
+  { id: "apartment", name: "Apartment" },
+  { id: "house", name: "House" },
+  { id: "land", name: "Land" },
+  { id: "building", name: "Building" },
+  { id: "farms", name: "Farms" },
+  { id: "commercial", name: "Commercial" },
+  { id: "chalet", name: "Chalet" },
+  { id: "shops", name: "Shops" },
+];
 
 const PropertyFilters: React.FC<PropertyFiltersProps> = ({ filters, setFilters }) => {
   const [propertyType, setPropertyType] = useState("");
   const [propertyCategory, setPropertyCategory] = useState("");
   const [city, setCity] = useState("");
-  const [propertyTypes, setPropertyTypes] = useState([]);
+  
   const [cities, setCities] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Fetch Property Types and Cities when the component mounts
   useEffect(() => {
-    fetchPropertyTypes();
     fetchCities();
   }, []);
 
-  const fetchPropertyTypes = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.post(
-        "http://localhost:8069/api/real-estate/property-types",
-        {
-          jsonrpc: "2.0",
-          method: "call",
-          params: {},
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
 
-      if (response?.data?.result?.result?.success) {
-        setPropertyTypes(response.data.result?.result.data);
-      } else {
-        setError(response.data?.result?.message || "Failed to fetch property types.");
-      }
-    } catch (err) {
-      setError("Error fetching property types. Please try again.");
-      console.error("API Error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const fetchCities = async () => {
     try {

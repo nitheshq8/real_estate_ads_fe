@@ -1,15 +1,19 @@
 import Image from "next/image";
+import CreateAdModal from "./CreateAdModal";
 
 const PropertyCard = ({ property }: { property: any }) => {
+  console.log("propertycard",property);
+  
   return (
     <div className="bg-white shadow-lg w-auto rounded-lg overflow-hidden">
       {/* Image */}
       <div className="relative w-full h-64 md:h-96">
-        <Image
-          src={property.image}
+        <img
+        src={`data:image/png;base64,${property.image}`}
+          // src={property.image}
           alt={property.name}
-          layout="fill"
-          objectFit="cover"
+          // // layout="fill"
+          // objectFit="cover"
           className="rounded-t-lg"
         />
       </div>
@@ -33,7 +37,12 @@ const PropertyCard = ({ property }: { property: any }) => {
           {property.bedrooms} Bedrooms {property.bathrooms} Bathrooms{" "}
           {property.area} sq ft
         </p>
-
+        <CreateAdModal 
+          // isOpen={isEditModalOpen} 
+          // onClose={() => setIsEditModalOpen(false)} 
+          ad={property} // Pass the ad data to modal
+          isEditMode={true} // Tell modal it's edit mode
+        />
         {/* Price and CTA */}
         <div className="flex justify-between items-center mt-4">
           <p className="text-xl font-bold">{property.price}</p>
