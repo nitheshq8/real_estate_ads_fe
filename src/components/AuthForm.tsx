@@ -28,15 +28,14 @@ const AuthForm: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = isRegister
+      const response:any= isRegister
         ? await registerUser(formData)
         : await loginUser(formData);
-
       if (response?.success) {
-        alert(isRegister ? "Account created! Please login." : "Login successful!");
+        alert(isRegister ? "Account created! successful " : "Login successful!");
         // router.push("/");
       } else {
-        alert(response?.message || "Something went wrong. Please try again.");
+        alert(response || "Something went wrong. Please try again.");
       }
     } catch (error) {
       alert("Error: Could not complete the request.");

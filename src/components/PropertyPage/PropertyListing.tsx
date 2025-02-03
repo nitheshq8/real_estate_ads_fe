@@ -262,8 +262,8 @@ import PropertyFilters from "./PropertyFilters";
 import PropertyCard from "./PropertyCard";
 import ShareAdsModal from "./ShareAdsModal";
 import axios from "axios";
-
-const PropertiesPage = () => {
+// filters,setFilters,properties,
+const PropertiesPage = ({cities, toggleSelectAd, selectedAds}:any) => {
   const [filters, setFilters] = useState({
     property_type: "",
     city: "",
@@ -273,7 +273,6 @@ const PropertiesPage = () => {
   });
 
   const [properties, setProperties] = useState([]);
-  const [selectedAds, setSelectedAds] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -282,12 +281,7 @@ const PropertiesPage = () => {
   //     prev.includes(adId) ? prev.filter((id) => id !== adId) : [...prev, adId]
   //   );
   // };
-  const toggleSelectAd = (ad) => {
-    setSelectedAds((prev) => {
-      const exists = prev.find((item) => item.id === ad.id);
-      return exists ? prev.filter((item) => item.id !== ad.id) : [...prev, ad];
-    });
-  };
+ 
   
   useEffect(() => {
     const fetchProperties = async () => {
@@ -296,20 +290,14 @@ const PropertiesPage = () => {
       setMessage(null);
 
       try {
-        const response = await fetch("http://localhost:8069/api/real-estate/ads/search", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            jsonrpc: "2.0",
+        const response = await axios.post("http://localhost:8069/api/real-estate/ads/search",  { jsonrpc: "2.0",
             method: "call",
-            params: { limit: 10, offset: 0, ...filters },
-          }),
-        });
-
-        const result = await response.json();
-        console.log("reeeee=",result?.result?.result?.ads);
+            params: { limit: 10, offset: 0, ...filters }}
+          
+        );
+        console.log("reeeee=",response.data?.result?.result?.ads);
         
-        setProperties(result?.result?.result?.ads);
+        setProperties(response.data?.result?.result?.ads);
         if (response.ok) {
           // setProperties(result.result.ads);
         } else {
@@ -330,10 +318,9 @@ const PropertiesPage = () => {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Real Estate Listings</h1>
 
-      <PropertyFilters filters={filters} setFilters={setFilters} />
+      <PropertyFilters filters={filters} setFilters={setFilters} cities={cities} />
 
-      <ShareAdsModal selectedAds={selectedAds} />
-
+    
       <div className="">
         {properties.map((property) => (
           <div key={property.id} className="border p-4 rounded">
@@ -344,7 +331,7 @@ const PropertiesPage = () => {
       onChange={() => toggleSelectAd(property)}
               className="mr-2"
             />
-            <PropertyCard property={property} />
+            <PropertyCard property={property} cities={cities} />
           </div>
         ))}
       </div>

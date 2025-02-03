@@ -11,6 +11,7 @@ interface Filters {
 interface PropertyFiltersProps {
   filters: Filters;
   setFilters: any;
+  cities:any
 }
 const propertyTypes = [
   { id: "apartment", name: "Apartment" },
@@ -23,49 +24,21 @@ const propertyTypes = [
   { id: "shops", name: "Shops" },
 ];
 
-const PropertyFilters: React.FC<PropertyFiltersProps> = ({ filters, setFilters }) => {
+const PropertyFilters=({ filters, setFilters,cities }:any) => {
+  console.log("____________cities",cities);
+  
   const [propertyType, setPropertyType] = useState("");
   const [propertyCategory, setPropertyCategory] = useState("");
   const [city, setCity] = useState("");
   
-  const [cities, setCities] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Fetch Property Types and Cities when the component mounts
-  useEffect(() => {
-    fetchCities();
-  }, []);
+ 
 
 
-
-  const fetchCities = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:8069/api/real-estate/cities",
-        {
-          jsonrpc: "2.0",
-          method: "call",
-          params: {},
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response?.data?.result?.result?.success) {
-        setCities(response.data.result?.result.data);
-      } else {
-        setError(response.data?.result?.message || "Failed to fetch cities.");
-      }
-    } catch (err) {
-      setError("Error fetching cities. Please try again.");
-      console.error("API Error:", err);
-    }
-  };
-
+  
   const handleApplyFilter = () => {
     console.log("Applying Filters...");
     const myf = {
@@ -103,7 +76,7 @@ const PropertyFilters: React.FC<PropertyFiltersProps> = ({ filters, setFilters }
           >
             <option value="">Any</option>
             {propertyTypes.map((type: any) => (
-              <option key={type.id} value={type.name}>
+              <option key={type.id} value={type.id}>
                 {type.name}
               </option>
             ))}
@@ -119,7 +92,7 @@ const PropertyFilters: React.FC<PropertyFiltersProps> = ({ filters, setFilters }
             className="w-full border rounded-lg p-2"
           >
             <option value="">Any</option>
-            {cities.map((city: any) => (
+            {cities&&cities?.map((city: any) => (
               <option key={city.id} value={city.id}>
                 {city.name}
               </option>

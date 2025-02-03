@@ -21,7 +21,7 @@ const PropertyModal = () => {
       {/* ✅ Trigger Button to Open Modal */}
       <button
         onClick={() => setIsPopupOpen(true)}
-        className="bg-green-300 hover:bg-green-900 min-w-fit  hover:text-white p-2  rounded-md"
+        className=" p-2  md:bg-green-300 hover:bg-green-900 bg-white min-w-fit  hover:text-white   rounded-md"
        >
         List Your Property
       </button>

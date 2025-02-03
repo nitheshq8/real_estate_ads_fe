@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import MYLayout from "@/components/PropertyPage/MYLayout";
 import PropertyListing from "@/components/PropertyPage/PropertyListing";
+import AdDetailPage from "@/components/AdDetailPage/AdDetailPage";
 
 export default function Home() {
   const [filters, setFilters] = useState({
@@ -19,8 +20,7 @@ export default function Home() {
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedAds, setSelectedAds] = useState([]);
-  
+
   /** Fetch Properties */
   const fetchProperties = async () => {
     try {
@@ -93,19 +93,13 @@ export default function Home() {
       setLoading(false);
     }
   },[filters])
-  const toggleSelectAd = (ad) => {
-    setSelectedAds((prev) => {
-      const exists = prev.find((item) => item.id === ad.id);
-      return exists ? prev.filter((item) => item.id !== ad.id) : [...prev, ad];
-    });
-  };
-  
+let selectedAds=''
   return (
     <div>
-      <MYLayout properties={trendingProperties1} cities={cities}  selectedAds={selectedAds}>
+      <MYLayout properties={trendingProperties1} cities={cities} selectedAds={selectedAds}>
         {loading && <p className="text-center text-blue-500 mt-4">Loading...</p>}
         {error && <p className="text-center text-red-500 mt-4">{error}</p>}
-        <PropertyListing filters={filters} setFilters={setFilters} properties={properties} cities={cities}  toggleSelectAd={toggleSelectAd} selectedAds={selectedAds} />
+    <AdDetailPage cities={cities}/>
       </MYLayout>
     </div>
   );

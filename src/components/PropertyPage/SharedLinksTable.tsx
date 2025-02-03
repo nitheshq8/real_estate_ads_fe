@@ -1,125 +1,3 @@
-// "use client";
-
-// import { useState, useEffect } from "react";
-// import axios from "axios";
-// import { getAllSharedLink } from "@/services/api";
-// import { useRouter } from "next/navigation";
-// import { IoMdClose } from "react-icons/io";
-
-// const SharedLinksTable = () => {
-
-//   const [isModalOpen, setIsModalOpen] = useState(false);
-//   const [sharedLinks, setSharedLinks] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState<string | null>(null);
-//   const router = useRouter();
-//   useEffect(() => {
-//     const fetchSharedLinks = async () => {
-//       try {
-//         const response = await getAllSharedLink()
-// console.log("response----sjl",response);
-
-//         if (response.success) {
-//           setSharedLinks(response.data);
-//         } else {
-//           setError(response.message);
-//         }
-//       } catch (err) {
-//         setError("Error fetching shared links.");
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchSharedLinks();
-//   }, []);
-
-//   return (
-//     <>
-//     {/* Share Button to Open Modal */}
-//     <div className="mt-1">
-//       <button
-//         className="bg-purple-600 text-white px-4 py-2 rounded"
-//         onClick={() => setIsModalOpen(true)}
-//        >
-//         Share Selected Ads
-//       </button>
-//     </div>
-//     {isModalOpen && (
-//         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-//           <div className="bg-white p-1  h-[90%] overflow-auto rounded-lg shadow-lg w-[98%] max-w-3xl">
-//           <button onClick={() => setIsModalOpen(false)} className="text-2xl ">
-//                 <IoMdClose />
-//               </button>
-//     <div className="container mx-auto p-6">
-//       <h2 className="text-2xl font-bold mb-4">Shared Ads Links</h2>
-
-//       {loading && <p className="text-blue-500">Loading shared links...</p>}
-//       {error && <p className="text-red-500">{error}</p>}
-
-//       {!loading && !error && (
-//         <div className="overflow-x-auto">
-//           <table className="min-w-full bg-white border border-gray-300 shadow-md rounded-lg">
-//             <thead>
-//               <tr className="bg-gray-100 text-gray-700">
-//                 <th className="px-4 py-2 border">#</th>
-//                 <th className="px-4 py-2 border">Shared With</th>
-//                 <th className="px-4 py-2 border">Expiry Date</th>
-//                 <th className="px-4 py-2 border">Visit Count</th>
-//                 <th className="px-4 py-2 border">Share Link</th>
-//                 <th className="px-4 py-2 border">Ads</th>
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {sharedLinks.length > 0 ? (
-//                 sharedLinks.map((link: any, index: number) => (
-//                   <tr key={link.id} className="border">
-//                     <td className="px-4 py-2 border">{index + 1}</td>
-//                     <td className="px-4 py-2 border">{link.shared_with || "N/A"}</td>
-//                     <td className="px-4 py-2 border">{link.expiry_date || "N/A"}</td>
-//                     <td className="px-4 py-2 border">{link.visit_count}</td>
-//                     <td className="px-4 py-2 border">
-//                       <a
-//                         href={link.share_url}
-//                         target="_blank"
-//                         rel="noopener noreferrer"
-//                         className="text-blue-600 underline"
-//                       >
-//                         Open Link
-//                       </a>
-//                     </td>
-//                     {/* <td className="px-4 py-2 border">
-//                       <ul className="list-disc pl-4">
-//                         {link.ad_details.map((ad: any) => (
-//                           <li key={ad.ad_id} className="text-gray-700">
-//                             {ad.name} ({ad.city})
-//                           </li>
-//                         ))}
-//                       </ul>
-//                     </td> */}
-//                   </tr>
-//                 ))
-//               ) : (
-//                 <tr>
-//                   <td colSpan={6} className="text-center py-4 text-gray-500">
-//                     No shared ads found.
-//                   </td>
-//                 </tr>
-//               )}
-//             </tbody>
-//           </table>
-//         </div>
-//       )}
-//     </div>
-//     </div>
-//         </div>
-//       )}
-//     </>
-//   );
-// };
-
-// export default SharedLinksTable;
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -144,16 +22,27 @@ const SharedLinksTable = () => {
 
     try {
       
-    const response = await searchSharedLink(
-                 {
-                shared_with: sharedWith,
-                expiry_date: expiryDate,
-              },)
-        setSharedLinks(response?.data);
-        if (response.success) {
-          setSharedLinks(response.data);
+      const response = await axios.post(
+        "http://localhost:8069/api/real-estate/share/search",
+        {
+          jsonrpc: "2.0",
+          method: "call",
+          params: {
+            shared_with: sharedWith,
+            expiry_date: expiryDate,
+          },
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  setSharedLinks(response?.data?.result?.result?.data);
+        if (response?.data?.result?.result.success) {
+          setSharedLinks(response?.data?.result?.result?.data);
         } else {
-          setError(response.message);
+          setError(response?.data?.result?.result.message);
         }
 
       if (response.data.result.success) {
@@ -175,10 +64,10 @@ const SharedLinksTable = () => {
   return (
     <>
       {/* Button to Open Modal */}
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto ">
         <button
-         className="bg-green-300 hover:bg-green-900 min-w-fit  hover:text-white p-2  rounded-md"
-         onClick={() => setIsModalOpen(true)}
+        className=" p-2  md:bg-green-300 hover:bg-green-900 bg-white min-w-fit  hover:text-white   rounded-md"
+        onClick={() => setIsModalOpen(true)}
         >
           View Shared Ads
         </button>
@@ -237,8 +126,8 @@ const SharedLinksTable = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {sharedLinks.length > 0 ? (
-                        sharedLinks.map((link: any, index: number) => (
+                      {sharedLinks?.length > 0 ? (
+                        sharedLinks?.map((link: any, index: number) => (
                           <tr key={link.id} className="border">
                             <td className="px-4 py-2 border">{index + 1}</td>
                             <td className="px-4 py-2 border">{link.shared_with || "N/A"}</td>
