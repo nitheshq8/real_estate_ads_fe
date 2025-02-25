@@ -20,6 +20,8 @@ const TrendingPropertyCard = ({ property }:any) => {
             alt={property.name}
             // layout="fill"
             // objectFit="cover"
+
+          className="rounded-t-lg h-60 w-full"
           />
         ) : (
           <div className="flex items-center justify-center h-full text-gray-500">
@@ -31,13 +33,16 @@ const TrendingPropertyCard = ({ property }:any) => {
       {/* Property Details */}
       <div className="mt-3">
         <h3 className="font-bold text-lg">{property.name}</h3>
-        <p className="text-gray-500 text-sm">{property.location}</p>
-        <p className="text-blue-600 font-semibold text-lg mt-1">
+        <p className="text-gray-500 flex justify-end">
+            View's 👀 :{property?.total_visits}
+          </p>
+        {/* <p className="text-gray-500 text-sm">{property.location}</p> */}
+        {/* <p className="text-blue-600 font-semibold text-lg mt-1">
           ${property.price.toLocaleString()}
         </p>
         <p className="text-gray-500 text-sm">
           {property.beds} beds • {property.baths} baths
-        </p>
+        </p> */}
       </div>
     </div>
   );

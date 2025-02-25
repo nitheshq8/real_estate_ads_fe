@@ -24,7 +24,7 @@ const propertyTypes = [
   { id: "shops", name: "Shops" },
 ];
 
-const PropertyFilters=({ filters, setFilters,cities }:any) => {
+const PropertyFilters=({ filters, setFilters,cities ,handleAdChange,fetchPropertiesWithFilter}:any) => {
   console.log("____________cities",cities);
   
   const [propertyType, setPropertyType] = useState("");
@@ -33,20 +33,40 @@ const PropertyFilters=({ filters, setFilters,cities }:any) => {
   
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  // NEW: state for price range
+  const [priceMin, setPriceMin] = useState("");
+  const [priceMax, setPriceMax] = useState("");
 
   // Fetch Property Types and Cities when the component mounts
  
 
 
   
+  // const handleApplyFilter = () => {
+  //   console.log("Applying Filters...",propertyType);
+  //   const myf = {
+  //     property_type: propertyType,
+  //     reason: propertyCategory,
+  //     city: city,
+  //   };
+    
+  //   // fetchPropertiesWithFilter({
+  //   //   property_type: propertyType,
+  //   //   reason: propertyCategory,
+  //   //   city: city,
+  //   // })
+    
+  // };
   const handleApplyFilter = () => {
-    console.log("Applying Filters...");
-    const myf = {
+    setFilters((prev: any) => ({
+      ...prev,
       property_type: propertyType,
       reason: propertyCategory,
-      city: city,
-    };
-    setFilters(myf);
+      city,
+      price_min: priceMin,
+      price_max: priceMax,
+    }));
+    // fetchPropertiesWithFilter();
   };
 
   const handleClear = () => {
@@ -58,6 +78,8 @@ const PropertyFilters=({ filters, setFilters,cities }:any) => {
     setPropertyType("");
     setPropertyCategory("");
     setCity("");
+    setPriceMin("");
+    setPriceMax("");
   };
 
   return (
@@ -114,18 +136,39 @@ const PropertyFilters=({ filters, setFilters,cities }:any) => {
           </select>
         </div>
       </div>
-
+      <div className="grid grid-cols-2 gap-4 mt-4">
+        <div>
+          <label className="block text-sm font-semibold">Price Min</label>
+          <input
+            type="number"
+            value={priceMin}
+            onChange={(e) => setPriceMin(e.target.value)}
+            className="w-full border rounded-lg p-2"
+            placeholder="Enter min price"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-semibold">Price Max</label>
+          <input
+            type="number"
+            value={priceMax}
+            onChange={(e) => setPriceMax(e.target.value)}
+            className="w-full border rounded-lg p-2"
+            placeholder="Enter max price"
+          />
+        </div>
+      </div>
       <div className="flex justify-between mt-4">
         <button
           type="button"
-          className="flex w-full justify-center m-1 bg-blue-600 text-white py-2 rounded-lg"
+          className="flex w-full justify-center m-1 bg-blue-700 hover:bg-blue-950 text-white py-2 rounded-lg"
           onClick={handleApplyFilter}
         >
           Apply Filters
         </button>
         <button
           type="button"
-          className="flex w-full justify-center m-1 bg-gray-400 text-white py-2 rounded-lg"
+          className="flex w-full justify-center m-1 bg-gray-400 hover:bg-black text-white py-2 rounded-lg"
           onClick={handleClear}
         >
           Clear Filters

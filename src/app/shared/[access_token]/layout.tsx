@@ -13,16 +13,10 @@ import {
 import { FiMenu } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import Image from "next/image";
-import TrendingProperties from "./TrendingProperties";
-import PropertyTypeModal from "../PropertyType/PropertyTypeModal";
-import CreateAdModal from "./CreateAdModal";
-import { useRouter } from "next/navigation";
-import SharedLinksTable from "./SharedLinksTable";
-import Footer from "../Footer";
+import { useParams, useRouter } from "next/navigation";
 import UserMenu from "@/hooks/UserMenu";
-import { getCompanydetails } from "@/services/api";
-import SubscritionModal from "../Subscription/SubscritionModal";
-import SubscriptionPlanDetails from "../SubscriptionPlanDetails";
+import {  getCompanydetailsBytoken } from "@/services/api";
+import UserAvatar from "@/hooks/UserAvatar";
 // import Footer from "../Footer";
 const navItems = [
   { name: "Home", url: "/" },
@@ -39,7 +33,6 @@ const MYLayout = ({
   selectedAds,
   isdetailpage,
   handleAdChange,
-  mysubscriptionPlan
 }: {
   children: ReactNode;
   properties?: any;
@@ -47,31 +40,38 @@ const MYLayout = ({
   selectedAds?: any;
   isdetailpage?: boolean;
   handleAdChange: any;
-  mysubscriptionPlan?:any
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [companydata, setCompanyData] = useState({ name: "A" });
   const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
- 
-  const fetchcompanydetails = useCallback(async () => {
-    const response = await getCompanydetails("");
-setCompanyData(response.result);
-  
-  }, []);
+  const { access_token } = useParams();
+ // Fetch company details
+ const getCompanyDetails = useCallback(async () => {
+  if (!access_token) return;
+  try {
+    const response: any = await getCompanydetailsBytoken({ access_token });
+    if (response?.data?.result?.success) {
+      setCompanyData(response.data.result.data);
+    }
+  } catch (err) {
+    console.error("Error fetching company details:", err);
+  }
+}, [access_token]);
 
   useEffect(() => {
     // if (!isFetched.current) {
-    fetchcompanydetails();
+      getCompanyDetails();
     //   isFetched.current = true;
     // }
-  }, [fetchcompanydetails]);
+  }, [getCompanyDetails]);
 
   return (
     <div className="relative flex flex-col h-screen ">
       {/* Header */}
       <header className="bg-white shadow-md p-4 flex justify-around items-center fixed top-0 w-full z-50">
         <div className="flex items-center">
-        <div
+          
+            <div
       className="flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 overflow-hidden"
       style={{ width: '50px', height: '50px' }}
     >
@@ -85,53 +85,11 @@ setCompanyData(response.result);
     </div>
           <h1 className="text-xl font-bold ml-2">{companydata?.name}</h1>
         </div>
-        {/* logo */}
-        {/* {isdetailpage?'':   <ShareAdsModal selectedAds={selectedAds} />} */}
-
+       
         {/* Desktop View (Hidden on Mobile) */}
         <div className="hidden md:flex items-center  min-w-fit justify-between">
-          {/* <input
-            type="text"
-            placeholder="Search properties"
-            className="border p-2 mr-2 rounded-full w-64"
-          /> */}
-
-          <PropertyTypeModal />
-          <div className="ml-1 flex">
-            <SharedLinksTable />
-          </div>
-          {/* <CreateAdModalWithAddIMg/> */}
-          {/* <CreateAdModalwithcity/> */}
-          <div className="ml-1 flex">
-            {userData?.is_admin && (
-              <CreateAdModal cities={cities} handleAdChange={handleAdChange} 
-              
-              mysubscriptionPlan={mysubscriptionPlan}
-              />
-            )}
-            {/* <CreateAdModalWithAddIMg/> */}
-          </div>
-          {/* {userData?.is_admin &&(
-
-<a
-key={-1}
-href={'/admin'}
-className="block p-2 rounded-lg hover:bg-gray-200"
-
->
-Admin page
-</a>
-
-
-             )} */}
-              <div className=" m-1 ">
-
-              <SubscritionModal/>
-              </div>
-             <div className=" m-1 ">
-
-             <UserMenu userData={userData} />
-             </div>
+         
+          <UserMenu userData={userData} />
         </div>
 
         {/* Mobile Menu Button */}
@@ -142,7 +100,6 @@ Admin page
           <FiMenu />
         </button>
       </header>
-  {/* Subscription Error Modal */}
 
       {/* Desktop Layout */}
       <div className="hidden md:flex flex-1 mt-16">
@@ -157,39 +114,21 @@ Admin page
               >
                 {item.name}
               </a>
-              
             ))}
           </nav>
-        
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-6  ml-[20%] mr-[25%] overflow-y-auto">
+        <main className="flex-1 p-6  ml-[20%]  overflow-y-auto">
           {children}
         </main>
 
-        {/* Sidebar (Trending Properties) */}
-        {isdetailpage ? (
-          ""
-        ) : (
-          <aside className="w-1/4 bg-gray-100 p-4 fixed right-0 top-24 h-screen overflow-y-auto">
-            {/* <h2 className="text-lg font-bold">Trending Properties</h2> */}
-            <div className="space-y-4 overflow-y-auto">
-              <TrendingProperties properties={properties} />
-            </div>
-          </aside>
-        )}
+      
       </div>
 
       {/* Mobile View */}
       <div className="md:hidden">
-        {isdetailpage ? (
-          ""
-        ) : (
-          <div className=" mt-24">
-            <TrendingProperties properties={properties} />
-          </div>
-        )}{" "}
+       
         {/* Main Content */}
         <main className="p-6 relative">{children}</main>
         {/* Left-side Menu Drawer */}
@@ -214,13 +153,6 @@ Admin page
                   </a>
                 ))}
 
-                <CreateAdModal
-                  cities={cities}
-                  handleAdChange={handleAdChange}
-                  mysubscriptionPlan={mysubscriptionPlan}
-                />
-                <SharedLinksTable />
-                <PropertyTypeModal />
               </nav>
             </div>
           </div>
@@ -234,12 +166,7 @@ Admin page
         <footer className="bg-gray-800 text-white py-6">
           <div className="max-w-4xl mx-auto px-4">
             <div className="flex justify-between items-center">
-              {/* <div className="space-x-4">
-              <a href="/" className="hover:underline">Home</a>
-              <a href="/about" className="hover:underline">About</a>
-              <a href="/contact" className="hover:underline">Contact</a>
-              <a href="/privacy-policy" className="hover:underline">Privacy Policy</a>
-            </div> */}
+             
 
               <div className="space-y-4">
                 {navItems.map((item, index) => (

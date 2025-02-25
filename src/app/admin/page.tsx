@@ -4,9 +4,8 @@ import MYLayout from "@/components/PropertyPage/MYLayout";
 import PropertyListing from "@/components/PropertyPage/PropertyListing";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/Loader";
-import { fetchadminProperties, fetchadmintredningProperties, fetchAllCities, fetchAllProperties, fetchSubscriptionPlanByUserId, } from "@/services/api";
-
-import PropertiesPage from "@/components/PropertyPage/PropertyListing";
+import { fetchadminProperties, fetchAllCities, } from "@/services/api";
+import PropertiesAdminPage from "@/components/admin/PropertyListingadmin";
 
 export default function Home() {
   const [filters, setFilters] = useState({
@@ -25,8 +24,6 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const pageSize = 10;
   const [totalItems, setTotalItems] = useState(0);
-  const [mysubscriptionPlan, setMySubscriptionPlan] = useState<any>(null);
-  const [tredningProperties,setTredningProperties]= useState([])
   
   const router = useRouter();
   const isFetched = useRef(false);
@@ -48,35 +45,13 @@ export default function Home() {
         throw new Error(response.data?.error?.message || "Failed to fetch properties");
       }
     } catch (error) {
-      console.error("API Error (Properties):", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, filters]);
-
-  const fetchAdmintredning = useCallback(async () => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (!accessToken) {
-      router.push("/login");
-      return;
-    }
-
-    try {
-      setLoading(true);
-     const response = await  fetchadmintredningProperties();
-      if (response) {
-        setTredningProperties(response.data);
-        setTotalItems(response.total || 0);
-      } else {
-        throw new Error(response.data?.error?.message || "Failed to fetch properties");
-      }
-    } catch (error) {
     //   setError("Error fetching properties.");
       console.error("API Error (Properties):", error);
     } finally {
       setLoading(false);
     }
   }, [page, filters]);
+
   const fetchCities = useCallback(async () => {
     try {
       const response = await fetchAllCities();
@@ -91,18 +66,9 @@ export default function Home() {
     }
   }, []);
 
-  const fetchsubscriptionPlan = useCallback(async () => {
-    try {
-      const response:any = await fetchSubscriptionPlanByUserId();
-     setMySubscriptionPlan(response?.data?.result)
-    } catch (error) {
-      setError("Error fetching cities.");
-      console.error("API Error (Cities):", error);
-    }
-  }, []);
   useEffect(() => {
     // if (!isFetched.current) {
-         Promise.all([fetchProperties(), fetchCities(),fetchsubscriptionPlan(),fetchAdmintredning()]);
+         Promise.all([fetchProperties(), fetchCities()]);
     //   isFetched.current = true;
     // }
   }, [fetchProperties, fetchCities,filters]);
@@ -111,34 +77,23 @@ export default function Home() {
     fetchProperties();
   }, [fetchProperties]);
 
-  
-  const toggleSelectAd = (adOrArray: { id: any, [key: string]: any } | { id: any, [key: string]: any }[]) => {
-    setSelectedAds((prev: any) => {
-      if (Array.isArray(adOrArray)) {
-        // Check if all properties are already selected
-        const allSelected = properties.length === prev.length;
-  
-        return allSelected ? [] : properties.map((property: any) => ({ ...property }));
-      }
-  
-      // Toggle individual selection
-      return prev.some((item: any) => item.id === adOrArray.id)
-        ? prev.filter((item: any) => item.id !== adOrArray.id)
-        : [...prev, adOrArray];
-    });
+  const toggleSelectAd = (ad: { id: any; }) => {
+    setSelectedAds((prev:any) => prev.some((item:any) => item.id === ad.id)
+      ? prev.filter((item:any) => item.id !== ad.id)
+      : [...prev, ad]
+    );
   };
-  
+
   return (
-    <MYLayout properties={tredningProperties} cities={cities} selectedAds={selectedAds} handleAdChange={handleAdChange} mysubscriptionPlan={mysubscriptionPlan}>
+    <MYLayout properties={properties} cities={cities} selectedAds={selectedAds} handleAdChange={handleAdChange}>
       {loading && <p className="text-center text-blue-500 mt-4"><Loader /></p>}
       {error && <p className="text-center text-red-500 mt-4">{error}</p>}
       
-      <PropertiesPage
+      <PropertiesAdminPage
         filters={filters} setFilters={setFilters}
         properties={properties} cities={cities}
         handleAdChange={handleAdChange}
         toggleSelectAd={toggleSelectAd} selectedAds={selectedAds}
-        mysubscriptionPlan={mysubscriptionPlan}
       />
     </MYLayout>
   );

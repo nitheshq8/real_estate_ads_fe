@@ -2,34 +2,43 @@
 
 "use client";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { createShrareLink } from "@/services/api";
 import SharedLinksTable from "./SharedLinksTable";
+import { FiCheck, FiCopy } from "react-icons/fi";
 
-const ShareAdsModal = ({ selectedAds }: any) => {
+const ShareAdsModal = ({ selectedAds ,mysubscriptionPlan}: any) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [recipient, setRecipient] = useState("");
   const [duration, setDuration] = useState(1);
   const [expiryUnit, setExpiryUnit] = useState("days");
-  const [showKuwaitFinder, setShowKuwaitFinder] = useState(true);
+  const [forever, setForever] = useState(false);
   const [createdOn, setCreatedOn] = useState("");
   const [expiresOn, setExpiresOn] = useState("");
   const [visitCount, setVisitCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [sharedlink, setSharedLink] = useState("");
+  const [copied, setCopied] = useState(false);
+console.log("selectedAds",selectedAds);
 
-  console.log("selectedAds", selectedAds);
-
-  // Set created & expiry date
+  const [showKuwaitFinder, setShowKuwaitFinder] = useState(true);
   useEffect(() => {
     const currentDate = new Date();
     setCreatedOn(currentDate.toLocaleString());
 
-    const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + duration);
-    setExpiresOn(expiryDate.toLocaleString());
-  }, [duration]);
+    if (!forever) {
+      const expiryDate = new Date();
+      if (expiryUnit === "days") {
+        expiryDate.setDate(expiryDate.getDate() + duration);
+      } else {
+        expiryDate.setHours(expiryDate.getHours() + duration);
+      }
+      setExpiresOn(expiryDate.toLocaleString());
+    } else {
+      setExpiresOn("Never"); // Link does not expire
+    }
+  }, [duration, expiryUnit, forever]);
 
   // Function to Handle Share API Call
   const handleShare = async () => {
@@ -38,115 +47,145 @@ const ShareAdsModal = ({ selectedAds }: any) => {
       return;
     }
 
+    if (!recipient) {
+      setError("Please enter recipient name.");
+      return;
+    }
+
     setLoading(true);
     setError("");
     setMessage("");
 
     try {
-      const accessToken = localStorage.getItem("accessToken");
-      const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
-
       const response = await createShrareLink({
         ad_ids: selectedAds.map((ad: { id: any }) => ad.id),
         shared_with: recipient,
-        expiry_duration: duration,
-        expiry_unit: expiryUnit,
+        expiry_duration: forever ? null : duration, // If forever is checked, set expiry_duration as null
+        expiry_unit: forever ? null : expiryUnit, // If forever is checked, remove expiry unit
         show_kuwait_finder: showKuwaitFinder,
       });
 
-      if (response.result.success) {
-        setMessage(`Share Link: ${response.result.message}
-            ${response.result?.data?.share_url}
-            `);
+      if (response.data?.result?.result.success) {
+        setSharedLink(response.data?.result?.result?.data?.share_url);
+           // ✅ Clear form values after successful sharing
+      setRecipient("");
+      setDuration(1);
+      setExpiryUnit("days");
+      setForever(false);
+      setShowKuwaitFinder(true);
+      
+        setMessage(`Share Link Created: ${response.data?.result?.result?.data?.share_url}`);
       } else {
-        setError(response.result.message);
+
+console.log("----response?.data?.resultn--0",response?.data?.result?.error.message);
+        setError(response?.data?.result?.error.message);
       }
     } catch (err) {
-      setError("Error sharing ads.");
+      // setError("Error sharing ads.",err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const copyToClipboard = (url: any) => {
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <>
       {/* Share Button to Open Modal */}
       <div className="w-full">
-        <button
-          className="w-fit p-2 bg-green-500 hover:bg-green-700 text-white rounded-md transition-all"
-          onClick={() => setIsModalOpen(true)}
-          disabled={selectedAds.length === 0}
-        >
-       { selectedAds.length > 0 ? " 🔗 Share Selected Ads" :"Please select ads to share."}
-    
-        </button>
-       
+        {selectedAds.length > 0 && (
+          <button
+            className="w-full p-2 bg-blue-700 hover:bg-blue-950 text-white rounded-md transition-all"
+            onClick={() => setIsModalOpen(true)}
+          >
+            🔗 Share Selected Ads
+          </button>
+        )}
       </div>
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
-   
-{selectedAds.length === 0 ? (
-    <div className="bg-white h-full overflow-auto p-4 md:p-6 rounded-lg shadow-lg w-full max-w-2xl">
-    <p className="text-red-500 text-sm mt-2">Please select ads to share.</p>
-    </div>
-
-       ):
-        <div className="bg-white h-full overflow-auto p-4 md:p-6 rounded-lg shadow-lg w-full max-w-2xl">
-        <h2 className="text-lg font-bold mb-4">Share Ads</h2>
-
-        {/* Details Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium">Shared With</label>
-            <input
-              type="text"
-              value={recipient}
-              onChange={(e) => setRecipient(e.target.value)}
-              placeholder="Enter recipient name"
-              className="border p-2 rounded w-full"
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label className="block text-sm font-medium">Duration</label>
-            <div className="flex items-center gap-2">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-2">
+           
+          <div className="bg-white h-full overflow-auto p-4 md:p-6 rounded-lg shadow-lg w-full max-w-2xl">
+          <button
+          className="w-fit p-2 flex justify-self-end bg-red-500 hover:bg-red-700 text-white rounded-md transition-all"
+          onClick={() => setIsModalOpen(false)}
+          // disabled={selectedAds.length === 0}
+        >
+       close
+    
+        </button>
+            <h2 className="text-lg font-bold mb-4">Share Ads</h2>
+          
+            {error && <p className="text-center text-red-500 mt-4">{error}</p>}
+            {/* Recipient Input */}
+            <div>
+              <label className="block text-sm font-medium">Shared With</label>
               <input
-                type="number"
-                value={duration}
-                onChange={(e) => setDuration(Number(e.target.value))}
-                className="border p-2 rounded w-16"
+                type="text"
+                value={recipient}
+                required
+                onChange={(e) => setRecipient(e.target.value)}
+                placeholder="Enter recipient name"
+                className="border p-2 rounded w-full"
               />
-              <select
-                value={expiryUnit}
-                onChange={(e) => setExpiryUnit(e.target.value)}
-                className="border p-2 rounded"
-              >
-                <option value="days">Days</option>
-                <option value="hours">Hours</option>
-              </select>
             </div>
-          </div>
-        </div>
 
-        {/* Expiry Details */}
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-gray-600">
-          <div>
-            <label className="block text-sm font-medium">Created On</label>
-            <p className="text-sm">{createdOn}</p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Expires On</label>
-            <p className="text-sm">{expiresOn}</p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Visit Count</label>
-            <p className="text-sm">{visitCount}</p>
-          </div>
-        </div>
+            {/* Duration & Forever Checkbox */}
+            <div className="flex flex-col mt-4">
+              <label className="block text-sm font-medium">Duration</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  value={duration}
+                  disabled={forever}
+                  onChange={(e) => setDuration(Number(e.target.value))}
+                  className="border p-2 rounded w-16 disabled:bg-gray-200"
+                />
+                <select
+                  value={expiryUnit}
+                  disabled={forever}
+                  onChange={(e) => setExpiryUnit(e.target.value)}
+                  className="border p-2 rounded disabled:bg-gray-200"
+                >
+                  <option value="days">Days</option>
+                  <option value="hours">Hours</option>
+                </select>
+              </div>
+            </div>
 
-        {/* Toggle Kuwait Finder Location */}
+            {/* Forever Checkbox */}
+            <div className="flex items-center gap-2 mt-2">
+              <input
+                type="checkbox"
+                checked={forever}
+                onChange={() => setForever(!forever)}
+                className="w-4 h-4"
+              />
+              <label className="text-sm font-medium">Make link forever</label>
+            </div>
+
+            {/* Expiry Details */}
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-gray-600">
+              <div>
+                <label className="block text-sm font-medium">Created On</label>
+                <p className="text-sm">{createdOn}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium">Expires On</label>
+                <p className="text-sm">{expiresOn}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium">Visit Count</label>
+                <p className="text-sm">{visitCount}</p>
+              </div>
+            </div>
+              {/* Toggle Kuwait Finder Location */}
         <div className="flex items-center gap-2 mt-4">
           <input
             type="checkbox"
@@ -156,8 +195,8 @@ const ShareAdsModal = ({ selectedAds }: any) => {
           <label className="text-sm font-medium">Show Kuwait Finder Location Link</label>
         </div>
 
-        {/* Selected Ads List */}
-        <div className="mt-4 border rounded-lg p-3 max-h-64 overflow-y-auto">
+  {/* Selected Ads List */}
+  <div className="mt-4 border rounded-lg p-3 max-h-64 overflow-y-auto">
           <h3 className="text-sm font-semibold mb-2">Selected Ads</h3>
           <table className="w-full text-sm">
             <thead>
@@ -174,14 +213,18 @@ const ShareAdsModal = ({ selectedAds }: any) => {
                   <td className="p-2">
                     <img
                       // src={ad.image || "/placeholder.png"}
-                      src= { ad?.image?`data:image/png;base64,${ad?.image}`:"/placeholder.png"}
-   
-                      alt={ad.title}
+                      // src= { ad?.image?`data:image/png;base64,${ad?.image}`:"/placeholder.png"}
+                      src={
+                        ad?.image
+                          ? `data:image/png;base64,${ad?.image}`
+                          : `https://placehold.co/600x400.png?text=${ad.name}`
+                      }
+                      alt={ad.name}
                       
                       className="w-12 h-12 rounded"
                     />
                   </td>
-                  <td className="p-2">{ad.title}</td>
+                  <td className="p-2">{ad.name}</td>
                   <td className="p-2">{ad.city}</td>
                   <td className="p-2">${ad?.price}</td>
                 </tr>
@@ -190,25 +233,37 @@ const ShareAdsModal = ({ selectedAds }: any) => {
           </table>
         </div>
 
-        {/* Success & Error Messages */}
-        {message && <p className="text-green-600 mt-2">{message}</p>}
-        {error && <p className="text-red-600 mt-2">{error}</p>}
+            {/* Share Link Section */}
+            {sharedlink && (
+              <div className="mt-4 flex items-center space-x-3 bg-gray-100 p-3 rounded-lg">
+                <input
+                  type="text"
+                  value={sharedlink}
+                  readOnly
+                  className="w-full bg-transparent text-gray-700 outline-none"
+                />
+                <button
+                  onClick={() => copyToClipboard(`http://localhost:3000/${sharedlink}`)}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-950 flex items-center"
+                >
+                  {copied ? <FiCheck className="mr-2" /> : <FiCopy className="mr-2" />}
+                  {copied ? "Copied" : "Copy"}
+                </button>
+              </div>
+            )}
 
-        {/* Action Buttons */}
-        <div className="mt-4 flex justify-end gap-2">
-          <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-400 text-white rounded">
-            Cancel
-          </button>
-          <button onClick={handleShare} className="px-4 py-2 bg-purple-600 text-white rounded" disabled={loading}>
-            {loading ? "Sharing..." : "Share"}
-          </button>
-        </div>
+            {/* Action Buttons */}
+            <div className="mt-4 flex justify-end gap-2">
+              <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 w-full bg-gray-400 text-white rounded">
+                Cancel
+              </button>
+              <button onClick={handleShare}  className="px-4 py-2 w-full bg-purple-600 text-white rounded" disabled={loading}>
+                {loading ? "Sharing..." : "Share"}
+              </button>
+            </div>
 
-        <SharedLinksTable />
-      </div>
-      
-      }
-         
+            {/* <SharedLinksTable /> */}
+          </div>
         </div>
       )}
     </>

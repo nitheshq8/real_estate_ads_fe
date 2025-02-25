@@ -1,15 +1,14 @@
+
+
 "use client";
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
+import axios from "axios";
 import MYLayout from "@/components/PropertyPage/MYLayout";
 import PropertyListing from "@/components/PropertyPage/PropertyListing";
 import AdDetailPage from "@/components/AdDetailPage/AdDetailPage";
-import { fetchAllCities, fetchPropertiesById, fetchSubscriptionPlanByUserId } from "@/services/api";
-import Loader from "@/components/Loader";
-import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
-import AdDetailWithEdit from "@/components/AdDetailPage/MyDetailpage";
+import Footer from "@/components/Footer";
 
-export default function Home() {
+export default function Home({children}:any) {
   const [filters, setFilters] = useState({
     property_type: "",
     city: "",
@@ -25,20 +24,22 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedAds, setSelectedAds] = useState([]);
-  const [mysubscriptionPlan, setMySubscriptionPlan] = useState(null);
-  
+
   /** Fetch Properties */
   const fetchProperties = async () => {
     const accessToken = localStorage.getItem("accessToken");
         const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
     
     try {
-      const response = await fetchPropertiesById( { limit: 10, offset: 0, ...filters,user_id:userData.user_id  })
-    
+      const response = await axios.post("http://localhost:8069/api/real-estate/ads/search", {
+        jsonrpc: "2.0",
+        method: "call",
+        params: { limit: 10, offset: 0, ...filters,user_id:userData.user_id  },
+      });
 
-      if (response?.ads) {
-        setProperties(response.ads);
-        setTrendingProperties(response.ads);
+      if (response.data?.result?.result?.ads) {
+        setProperties(response.data.result.result.ads);
+        setTrendingProperties(response.data.result.result.ads);
       } else {
         throw new Error(response.data?.error?.message || "Failed to fetch properties");
       }
@@ -48,42 +49,34 @@ export default function Home() {
     }
   };
 
-/** Fetch Cities */
-const fetchCities = async () => {
-  try {
-    const response = await fetchAllCities();
+  /** Fetch Cities */
+  const fetchCities = async () => {
+    try {
+      const response = await axios.post("http://localhost:8069/api/real-estate/cities", {
+        jsonrpc: "2.0",
+        method: "call",
+        params: {},
+      });
 
-    if (response?.success) {
-      setCities(response.data);
-    } else {
-      throw new Error(
-        response.data?.error?.message || "Failed to fetch cities."
-      );
+      if (response.data?.result?.result?.success) {
+        setCities(response.data.result.result.data);
+      } else {
+        throw new Error(response.data?.error?.message || "Failed to fetch cities.");
+      }
+    } catch (error) {
+      setError("Error fetching cities.");
+      console.error("API Error (Cities):", error);
     }
-  } catch (error) {
-    setError("Error fetching cities.");
-    console.error("API Error (Cities):", error);
-  }
-};
+  };
 
-const fetchsubscriptionPlan = useCallback(async () => {
-  try {
-    const response:any = await fetchSubscriptionPlanByUserId();
-   setMySubscriptionPlan(response?.data?.result)
-      
-   
-  } catch (error) {
-    setError("Error fetching cities.");
-    console.error("API Error (Cities):", error);
-  }
-}, []);
+ 
 
   /** Fetch All Data in Parallel using `Promise.all` */
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      await Promise.all([fetchProperties(), fetchCities(),fetchsubscriptionPlan()]);
+      await Promise.all([fetchProperties(), fetchCities()]);
     } catch (error) {
       setError("Error fetching data.");
     } finally {
@@ -94,6 +87,8 @@ const fetchsubscriptionPlan = useCallback(async () => {
   /** Run Fetch Once on Mount & when Filters Change */
   const isFetched = useRef(false);
   const fetchAdDetailsMemoized = useMemo(() => fetchData, []);
+  
+  const fetchAdfetchPropertiessMemoized = useMemo(() => fetchProperties, []);
   
 
   useEffect(() => {
@@ -113,22 +108,13 @@ const fetchsubscriptionPlan = useCallback(async () => {
       return exists ? prev.filter((item: { id: any; }) => item.id !== ad.id) : [...prev, ad];
     });
   };
-  const router = useRouter();
+  
   return (
     <div>
-      <MYLayout properties={trendingProperties1} cities={cities}  selectedAds={selectedAds} isdetailpage={false} handleAdChange={handleAdChange} mysubscriptionPlan={mysubscriptionPlan}>
-        {loading && <Loader/>}
-        {error && <p className="text-center text-red-500 mt-4">{error}</p>}
-        <button
-          onClick={() => router.push("/")}
-          className="  mr-2 hover:bg-blue-900 min-w-fit hover:text-white p-2 rounded-md"
-        >
-         <ArrowLeft />
-        </button>
-        <AdDetailPage cities={cities} setFilters={setFilters} mysubscriptionPlan={mysubscriptionPlan}/> 
-        
-         {/* <AdDetailWithEdit cities={cities} setFilters={setFilters}/>  */}
-         </MYLayout>
+      <MYLayout properties={properties} cities={cities}  selectedAds={selectedAds} isdetailpage={false} handleAdChange={handleAdChange}>
+      {children}
+      </MYLayout>
+     
     </div>
   );
 }

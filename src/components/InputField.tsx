@@ -23,6 +23,7 @@ const InputField: React.FC<InputProps> = ({
         {label}
       </label>
       <input
+      required
         id={name}
         name={name}
         type={type}
