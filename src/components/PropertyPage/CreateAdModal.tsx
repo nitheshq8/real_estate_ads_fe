@@ -7,7 +7,11 @@ import { FilePenLine, Trash2 } from "lucide-react";
 import imageCompression from "browser-image-compression";
 import { useRouter } from "next/navigation";
 import SubscriptionPlanDetails from "../Subscription/SubscriptionPlanDetails";
-import { adsaddMultiImage, createandUpdatesAds, deleteadsImage } from "@/services/api";
+import {
+  adsaddMultiImage,
+  createandUpdatesAds,
+  deleteadsImage,
+} from "@/services/api";
 
 const propertyTypes = [
   { id: "apartment", name: "Apartment" },
@@ -19,7 +23,13 @@ const propertyTypes = [
   { id: "chalet", name: "Chalet" },
   { id: "shops", name: "Shops" },
 ];
-const CreateAdModal = ({ ad, isEditMode, cities, handleAdChange ,mysubscriptionPlan}: any) => {
+const CreateAdModal = ({
+  ad,
+  isEditMode,
+  cities,
+  handleAdChange,
+  mysubscriptionPlan,
+}: any) => {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
@@ -37,7 +47,7 @@ const CreateAdModal = ({ ad, isEditMode, cities, handleAdChange ,mysubscriptionP
 
   const router = useRouter();
   // mysubscriptionPlan?.[0]?.have_portal
-   // Determine default for show_it_in_portal:
+  // Determine default for show_it_in_portal:
   // If mysubscriptionPlan?.[0]?.have_portal is explicitly false, default to false; otherwise, default to true.
   const defaultShowPortal = mysubscriptionPlan?.[0]?.have_portal !== false;
 
@@ -72,7 +82,7 @@ const CreateAdModal = ({ ad, isEditMode, cities, handleAdChange ,mysubscriptionP
         { id: "rent", name: "For Rent" },
       ];
       const matchedReason = reasons.find((r: any) => r.id === ad.reason);
-     
+
       setFormData({
         // ...prev,
         id: ad.id,
@@ -189,7 +199,7 @@ const CreateAdModal = ({ ad, isEditMode, cities, handleAdChange ,mysubscriptionP
   // Handle input changes
   const handleChange = (
     e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement|any
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | any
     >
   ) => {
     const { name, value, type, checked } = e.target;
@@ -221,9 +231,20 @@ const CreateAdModal = ({ ad, isEditMode, cities, handleAdChange ,mysubscriptionP
     if (!formData.price) errors.push("Price is required.");
     if (!formData.owner_name) errors.push("Owner Name is required.");
     if (!formData.owner_phone) errors.push("Owner Phone is required.");
-    if (!formData.description) errors.push("Description is required.");
-    if (!formData.kuwait_finder_link)
+    // if (!formData.description) errors.push("Description is required.");
+    if (!formData.kuwait_finder_link){
       errors.push("Kuwait Finder Link is required.");
+    }else if (
+      !(
+        formData.kuwait_finder_link.startsWith("http://kwfinder.page.link") ||
+        formData.kuwait_finder_link.startsWith("https://kwfinder.page.link")
+      )
+    ) {
+      errors.push(
+        "Invalid Kuwait Finder link. The link must start with 'http://kwfinder.page.link' or 'https://kwfinder.page.link'."
+      );
+    }
+     
     // if (!formData.main_image) errors.push('Main Image is required.');
     // if (!formData.additional_images.length) errors.push('At least one additional image is required.');
 
@@ -269,23 +290,23 @@ const CreateAdModal = ({ ad, isEditMode, cities, handleAdChange ,mysubscriptionP
         //     },
         //   }
         // );
-const response= await createandUpdatesAds(   {
-      jsonrpc: "2.0",
-      method: "call",
-      params: {
-        ...formData,
-        additional_images: !isEditMode ? additionalImages : [],
-      },
-    },
-    isEditMode
-  )
+        const response = await createandUpdatesAds(
+          {
+            jsonrpc: "2.0",
+            method: "call",
+            params: {
+              ...formData,
+              additional_images: !isEditMode ? additionalImages : [],
+            },
+          },
+          isEditMode
+        );
         if (response?.data?.result?.result?.success) {
-         
           setMessage(`Ad ${isEditMode ? "Updated" : "created"} successfully!`);
           alert(`Ad ${isEditMode ? "Updated" : "created"} successfully!`);
           handleAdChange();
           setIsOpen(false);
-         
+
           setMessage(""); // Close modal after submission
 
           setFormData({
@@ -303,8 +324,10 @@ const response= await createandUpdatesAds(   {
             show_it_in_portal: false, // Reset to default checked.
           });
         } else {
+          console.log("response-----",response?.data?.result?.error?.message);
+          
           setMessage(
-            response?.data?.result?.result?.message || "Failed to create ad."
+            response?.data?.result?.error?.message|| "Failed to create ad."
           );
         }
         router.refresh();
@@ -320,22 +343,18 @@ const response= await createandUpdatesAds(   {
     }
   };
   const deletedImage = async (index: number, imageId?: number) => {
-
-
-    if ( imageId) {
+    if (imageId) {
       try {
         setLoading(true);
-        
-        const response:any = await deleteadsImage(
-          {
-        jsonrpc: "2.0",
-        method: "call",
-        params: {
-          image_id: imageId,
-          ad_id: ad?.id,
-        },
-      }
-    )
+
+        const response: any = await deleteadsImage({
+          jsonrpc: "2.0",
+          method: "call",
+          params: {
+            image_id: imageId,
+            ad_id: ad?.id,
+          },
+        });
         setLoading(false);
         if (response.data?.result?.result?.success) {
           setAdditionalImages((prev) => prev.filter((_, i) => i !== index));
@@ -358,16 +377,14 @@ const response= await createandUpdatesAds(   {
       if (additionalImages.length > 4) {
         setError("Additional Images less then 4");
       } else {
-        const response:any = await adsaddMultiImage( {
+        const response: any = await adsaddMultiImage({
           jsonrpc: "2.0",
           method: "call",
           params: {
             images: additionalImages,
             ad_id: ad?.id,
           },
-        },)
-        
-       
+        });
 
         if (response.data?.result?.result?.success) {
           // setAdditionalImages((prev) => prev.filter((_, i) => i !== index));
@@ -390,41 +407,41 @@ const response= await createandUpdatesAds(   {
     <div className="container mx-auto ">
       {/* Button to open modal */}
       <button
-       onClick={(e) => {
-        e.preventDefault();
-        // Check for active subscription plan; if none, open the subscription error modal.
-        if (!mysubscriptionPlan || mysubscriptionPlan.length <=0) {
-          setShowSubErrorModal(true);
-        } else {
-          setIsOpen(true);
-        }
-        setError("");
-        setMessage("");
-      }}
-        className="md:p-2  md:bg-blue-700 hover:bg-blue-900 bg-white min-w-fit  md:text-white   rounded-md"
-      >
+        onClick={(e) => {
+          e.preventDefault();
+          // Check for active subscription plan; if none, open the subscription error modal.
+          if (!mysubscriptionPlan || mysubscriptionPlan.length <= 0) {
+            setShowSubErrorModal(true);
+          } else {
+            setIsOpen(true);
+          }
+          setError("");
+          setMessage("");
+        }}
+        className={`${isEditMode ? 'w-full p-2' : 'md:p-2 md:bg-blue-700 hover:bg-blue-900 bg-white min-w-fit md:text-white rounded-md'}`}
+        >
         {/* <FilePenLine />/ */}
         {isEditMode ? `Edit Ads` : "add new ads"}
       </button>
-  {/* Subscription Error Modal */}
-  {showSubErrorModal && (
+      {/* Subscription Error Modal */}
+      {showSubErrorModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50  flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h2 className="text-xl font-bold mb-4">No Active Subscription</h2>
             <p className="mb-4">
-              You don't have any active plan. Please subscribe to a plan to add new ads.
+              You don't have any active plan. Please subscribe to a plan to add
+              new ads.
             </p>
             <div className="max-h-96 overflow-auto">
-            <SubscriptionPlanDetails/>
+              <SubscriptionPlanDetails />
             </div>
-   
+
             <button
               onClick={() => setShowSubErrorModal(false)}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
             >
               Close
             </button>
-          
           </div>
         </div>
       )}
@@ -484,15 +501,19 @@ const response= await createandUpdatesAds(   {
                       className="w-full p-2 border rounded"
                     >
                       <option value="">Select Property Type</option>
-                      <option value="apartment">apartment</option>
-                      <option value="villa">villa</option>
-                      <option value="office">Office</option>
+                      {propertyTypes.map((property) => (
+                        <option key={property.id} value={property.id}>
+                          {property.name}
+                        </option>
+                      ))}
                     </select>
                   </label>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold">City: <span className="text-red-500">*</span></label>
+                  <label className="block text-sm font-semibold">
+                    City: <span className="text-red-500">*</span>
+                  </label>
                   <select
                     name="city"
                     required
@@ -815,8 +836,9 @@ const response= await createandUpdatesAds(   {
                   </div>
                 </div>
               )}
-                <p className="text-sm text-gray-600 mt-2">
-                Fields marked with <span className="text-red-500">*</span> are required.
+              <p className="text-sm text-gray-600 mt-2">
+                Fields marked with <span className="text-red-500">*</span> are
+                required.
               </p>
               {/* Submit Button */}
               <button
