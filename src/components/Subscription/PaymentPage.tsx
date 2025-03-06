@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { createPayment } from "@/services/api";
+import SubscritionModal from "./SubscritionModal";
 
 
 
@@ -170,13 +171,12 @@ export default function PaymentPage() {
 
       {/* Buttons */}
       <div className="flex justify-between mt-6">
-        <button
-          type="button"
-          onClick={handleEmpty}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+        <div
+       className="  rounded"
         >
-          Change Plan
-        </button>
+          Change Plan   <SubscritionModal/>
+        </div>
+      
         <button
           type="button"
           onClick={handlePay}

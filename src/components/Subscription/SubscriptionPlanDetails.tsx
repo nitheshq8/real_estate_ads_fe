@@ -144,7 +144,7 @@ interface PlanCardsProps {
 // Example discount for yearly
 const YEARLY_DISCOUNT_PERCENT = 20;
 
-export default function SubscriptionPlanDetails() {
+export default function SubscriptionPlanDetails({setIsPopupOpen}:any) {
   // Toggle for monthly/yearly
   const router = useRouter(); 
   const plans = [
@@ -216,6 +216,7 @@ export default function SubscriptionPlanDetails() {
   const handleChoosePlan = (plan: any) => {
     // Example: navigate to /payment and pass the plan as a query param
     // or store in localStorage or pass a route param, etc.
+    setIsPopupOpen()
     router.push(`/subscription/payment?plan=${plan.subscription_plan}&price=${plan.price}`);
     // In your /payment page, you can retrieve these query params
     // and display the plan/price for the user to fill in other details.

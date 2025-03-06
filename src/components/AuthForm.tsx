@@ -259,22 +259,24 @@ const AuthForm: React.FC = () => {
           </form>
         )}
 
-        {!isForgot && (
+        {/* {!isForgot && (
           <div className="text-center mt-4">
             <button type="button" onClick={() => setIsForgot(true)} className="text-red-500 underline">
               Forgot Password?
             </button>
           </div>
-        )}
+        )} */}
 
-        {!isForgot && (
+        {/* {!isForgot && (
           <p className="text-center mt-4 text-gray-600">
             {isRegister ? "Already have an account?" : "New user?"}{" "}
-            <button onClick={toggleForm} className="text-blue-500 underline">
+            <button 
+            // onClick={toggleForm}
+             className="text-blue-500 underline">
               {isRegister ? "Login here" : "Register here"}
             </button>
           </p>
-        )}
+        )} */}
       </div>
     </div>
   );

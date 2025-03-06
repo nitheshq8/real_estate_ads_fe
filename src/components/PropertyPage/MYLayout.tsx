@@ -22,7 +22,6 @@ import Footer from "../Footer";
 import UserMenu from "@/hooks/UserMenu";
 import { getCompanydetails } from "@/services/api";
 import SubscritionModal from "../Subscription/SubscritionModal";
-import SubscriptionPlanDetails from "../Subscription/SubscriptionPlanDetails";
 // import Footer from "../Footer";
 const navItems = [
   { name: "Home", url: "/" },
@@ -62,8 +61,8 @@ const MYLayout = ({
     }
   }, []);
   const fetchcompanydetails = useCallback(async () => {
-    const response = await getCompanydetails("");
-setCompanyData(response.result);
+    const response:any = await getCompanydetails("");
+setCompanyData(response?.result);
   
   }, []);
 

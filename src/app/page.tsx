@@ -1,13 +1,14 @@
 "use client";
 import { useEffect, useState, useCallback, useRef } from "react";
 import MYLayout from "@/components/PropertyPage/MYLayout";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import Loader from "@/components/Loader";
 import { fetchadminProperties, fetchadmintredningProperties, fetchAllCities, fetchAllProperties, fetchSubscriptionPlanByUserId, } from "@/services/api";
 
 import PropertiesPage from "@/components/PropertyPage/PropertyListing";
 
 export default function Home() {
+
   const [filters, setFilters] = useState({
     property_type: "",
     city: "",
@@ -29,7 +30,11 @@ export default function Home() {
   
   const router = useRouter();
   const isFetched = useRef(false);
-
+  const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      redirect('/login');
+      return;
+    }
   const fetchProperties = useCallback(async () => {
     const accessToken = localStorage.getItem("accessToken");
     if (!accessToken) {
@@ -99,6 +104,7 @@ export default function Home() {
     }
   }, []);
   useEffect(() => {
+  
     // if (!isFetched.current) {
          Promise.all([fetchProperties(), fetchCities(),fetchsubscriptionPlan(),fetchAdmintredning()]);
     //   isFetched.current = true;

@@ -6,7 +6,9 @@ import PaymentHistory from "./PaymentHistory";
 const SubscritionModal = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  
+  const togglePopup=()=>{
+    setIsPopupOpen((prev)=>!prev)
+  }
 
   return (
     <>
@@ -25,7 +27,7 @@ const SubscritionModal = () => {
             <h2 className="text-lg font-bold mb-4">Select Property Type</h2>
 
             {/* ✅ Display Property Types */}
-            <SubscriptionPlanDetails/>
+           <SubscriptionPlanDetails  setIsPopupOpen={()=>setIsPopupOpen(false)}/>
             {/* <PaymentHistory/> */}
 
             {/* ✅ Close Button */}
