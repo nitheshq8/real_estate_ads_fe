@@ -25,7 +25,13 @@ export default function MYLayout({
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [companydata, setCompanyData] = useState({ name: "A" });
-  const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
+ let userData ={}
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+     userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
+      // Your code that uses userData...
+    }
+  }, []);
   const { access_token } = useParams();
 
   // Fetch company details
