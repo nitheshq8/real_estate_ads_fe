@@ -44,21 +44,21 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "",
-        pathname: "/**", // Correct path for images from Odoo
-      },
-      {
-        protocol: "https",
-        hostname: ".com",
-        pathname: "/**", // Correct path for images from Odoo
-      },
-      {
-        protocol: "https",
-        hostname: "",
-        pathname: "/**", // General path for the domain
-      },
+    //   {
+    //     protocol: "https",
+    //     hostname: "",
+    //     pathname: "/**", // Correct path for images from Odoo
+    //   },
+    //   {
+    //     protocol: "https",
+    //     hostname: ".com",
+    //     pathname: "/**", // Correct path for images from Odoo
+    //   },
+    //   {
+    //     protocol: "https",
+    //     hostname: "",
+    //     pathname: "/**", // General path for the domain
+    //   },
       {
         protocol: "http",
         hostname: "16.24.17.78",
