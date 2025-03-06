@@ -88,9 +88,12 @@ export const registerUser = async (data: {
         accessToken: response.data.result.data?.api_key,
         user: userData,
       });
+      return { success: true, user: response?.data };
+    }else {
+      return { success: false, response };
     }
 
-    return response?.data?.result;
+   
   } catch (error) {
     throw error;
   }
@@ -98,7 +101,7 @@ export const registerUser = async (data: {
 
 export const loginUser = async (data: { email: string; password: string }) => {
   try {
-    const response = await apiInstance.post("/user/login", {
+    const response:any = await apiInstance.post("/user/login", {
       jsonrpc: "2.0",
       method: "call",
       params: data,
@@ -113,7 +116,7 @@ export const loginUser = async (data: { email: string; password: string }) => {
 
       return { success: true, user: response?.data };
     } else {
-      return { success: false, error: response.data.result.error };
+      return { success: false, response };
     }
 
     // Return user data for setting context

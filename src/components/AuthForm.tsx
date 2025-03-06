@@ -13,7 +13,7 @@ const AuthForm: React.FC = () => {
   const [isReset, setIsReset] = useState(false); // Toggle for reset password form
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [role, setRole] = useState("user");
+  const [role, setRole] = useState("admin");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -100,8 +100,7 @@ const AuthForm: React.FC = () => {
       if (response?.success) {
         alert(isRegister ? "Account created! successful " : "Login successful!");
         router.push("/");
-      } else {
-       alert(response?.error ||response.error?.message|| "Something went wrong. Please try again.");
+      } else { alert(response?.response.data?.result?.message|| "Something went wrong. Please try again.");
       }
     } catch (error) {
       alert("Error: Could not complete the request.");
@@ -207,7 +206,7 @@ const AuthForm: React.FC = () => {
               />
               
               
-              
+{/*               
               <div>
           <label className="block font-semibold mb-1" htmlFor="role">
             Register as:
@@ -221,7 +220,8 @@ const AuthForm: React.FC = () => {
             <option value="user">User</option>
             <option value="admin">Admin</option>
           </select>
-        </div></>
+        </div> */}
+        </>
             
               
             )}
