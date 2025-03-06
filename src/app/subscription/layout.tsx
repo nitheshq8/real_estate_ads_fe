@@ -25,11 +25,13 @@ export default function MYLayout({
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [companydata, setCompanyData] = useState({ name: "A" });
- let userData ={}
+  const [userData,setuserData]= useState('')
+ 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-     userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
+   const  userDatas= JSON.parse(localStorage.getItem("aiduser") || "{}");
       // Your code that uses userData...
+      setuserData(userDatas)
     }
   }, []);
   const { access_token } = useParams();

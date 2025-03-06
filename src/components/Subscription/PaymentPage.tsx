@@ -5,13 +5,19 @@ import { useSearchParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { createPayment } from "@/services/api";
 
-export default function PaymentPage({plan,price}:any) {
+
+
+
+export default function PaymentPage() {
   const router = useRouter();
+  // const searchParams = useSearchParams();
   const searchParams = useSearchParams();
+  const plan = searchParams.get("plan");
+  const total:any = searchParams.get("price");
   // const plan = searchParams.get("plan") || "custom";
-  const totalParam = searchParams.get("price") || "50000";
-  // const [total] = useState<number>(parseInt(price, 10) || 50000);
-  const [total] = useState<number>(price);
+  // const totalParam = searchParams.get("price) || "50000";
+  // // const [total] = useState<number>(parseInt(price, 10) || 50000);
+  // const [total] = useState<number>(price);
   // Form state for additional details
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");

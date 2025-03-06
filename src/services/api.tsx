@@ -1,7 +1,7 @@
 import axios from "axios";
 import { LocalStorageData, User } from "./types";
 import { error } from "console";
-const isProduction = true; // Change to false for development
+const isProduction = false; // Change to false for development
 const API_BASE_URL = isProduction?"http://16.24.17.78/api/user":"http://localhost:8069/api/user"
 // const API_BASE_URL = "http://localhost:8069/api/user";
 
