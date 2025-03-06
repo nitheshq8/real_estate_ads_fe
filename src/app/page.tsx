@@ -30,17 +30,21 @@ export default function Home() {
   
   const router = useRouter();
   const isFetched = useRef(false);
-  const accessToken = localStorage.getItem("accessToken");
+  if (typeof window !== 'undefined') {
+    const accessToken = localStorage.getItem("accessToken");
     if (!accessToken) {
       redirect('/login');
       return;
     }
+   }
+ 
   const fetchProperties = useCallback(async () => {
     const accessToken = localStorage.getItem("accessToken");
     if (!accessToken) {
       router.push("/login");
       return;
     }
+ 
 
     try {
       setLoading(true);
