@@ -83,6 +83,10 @@
 //     document: "/offline", // Specify a fallback document for offline use
 //   },
 // })(nextConfig);
+
+
+
+// next.config.js or next.config.mjs
 import withPWA from 'next-pwa';
 
 /** @type {import('next').NextConfig} */
@@ -91,11 +95,11 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: "/:path*",
+        source: "/api/:path*",
         headers: [
           {
             key: "Access-Control-Allow-Origin",
-            value: "*", // Adjust this value to restrict domains if needed
+            value: "*",
           },
           {
             key: "Access-Control-Allow-Methods",
@@ -112,8 +116,6 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        // Any request to /api/:path* on your Vercel domain is proxied
-        // to your backend at http://16.24.17.78/api/:path*
         source: "/api/:path*",
         destination: "http://16.24.17.78/api/:path*",
       },
@@ -139,7 +141,7 @@ export default withPWA({
   dest: "public",
   register: true,
   skipWaiting: true,
-  disable: process.env.NODE_ENV === "development", // Disable PWA in development mode
+  disable: process.env.NODE_ENV === "development",
   fallbacks: {
     document: "/offline",
   },
