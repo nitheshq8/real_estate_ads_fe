@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import axios from "axios";
+import { createPayment } from "@/services/api";
 
 export default function PaymentPage({plan,price}:any) {
   const router = useRouter();
@@ -30,11 +31,7 @@ export default function PaymentPage({plan,price}:any) {
   const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
     try {
       // Call the payment API endpoint
-      const response:any = await axios.post("http://localhost:8069/api/payment/doPayment", {
-     
-     
-       
-          params: {
+      const response:any = await createPayment({params: {
             plan: plan,
             amount: total,
             method: paymentMethod,
@@ -43,7 +40,6 @@ export default function PaymentPage({plan,price}:any) {
             email: email,
             name: name,
           },
-        
       });
       console.log("response----",response);
       

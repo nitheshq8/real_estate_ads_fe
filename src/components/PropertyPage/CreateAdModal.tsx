@@ -7,7 +7,7 @@ import { FilePenLine, Trash2 } from "lucide-react";
 import imageCompression from "browser-image-compression";
 import { useRouter } from "next/navigation";
 import SubscriptionPlanDetails from "../Subscription/SubscriptionPlanDetails";
-import { adsaddMultiImage, deleteadsImage } from "@/services/api";
+import { adsaddMultiImage, createandUpdatesAds, deleteadsImage } from "@/services/api";
 
 const propertyTypes = [
   { id: "apartment", name: "Apartment" },
@@ -252,24 +252,33 @@ const CreateAdModal = ({ ad, isEditMode, cities, handleAdChange ,mysubscriptionP
         : "http://localhost:8069/api/real-estate/ads/create";
 
       try {
-        const response = await axios.post(
-          url,
-          {
-            jsonrpc: "2.0",
-            method: "call",
-            params: {
-              ...formData,
-              additional_images: !isEditMode ? additionalImages : [],
-            },
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`, // Send access token
-            },
-          }
-        );
-
+        // const response = await axios.post(
+        //   url,
+        //   {
+        //     jsonrpc: "2.0",
+        //     method: "call",
+        //     params: {
+        //       ...formData,
+        //       additional_images: !isEditMode ? additionalImages : [],
+        //     },
+        //   },
+        //   {
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //       Authorization: `Bearer ${accessToken}`, // Send access token
+        //     },
+        //   }
+        // );
+const response= await createandUpdatesAds(   {
+      jsonrpc: "2.0",
+      method: "call",
+      params: {
+        ...formData,
+        additional_images: !isEditMode ? additionalImages : [],
+      },
+    },
+    isEditMode
+  )
         if (response?.data?.result?.result?.success) {
          
           setMessage(`Ad ${isEditMode ? "Updated" : "created"} successfully!`);

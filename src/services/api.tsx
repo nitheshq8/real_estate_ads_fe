@@ -1,11 +1,12 @@
 import axios from "axios";
 import { LocalStorageData, User } from "./types";
 import { error } from "console";
-const isProduction = false; // Change to false for development
-const API_BASE_URL = "http://localhost:8069/api/user";
+const isProduction = true; // Change to false for development
+const API_BASE_URL = isProduction?"http://16.24.17.78/api/user":"http://localhost:8069/api/user"
+// const API_BASE_URL = "http://localhost:8069/api/user";
 
 export const apiBaseURL = isProduction
-  ? "http://localhost:80/api"
+  ? "http://16.24.17.78/api"
   : "http://localhost:80/api";
 
 export const imgBaseURL = isProduction
@@ -695,7 +696,7 @@ export const adsUpdate = async (params:any) => {
     const accessToken = localStorage.getItem("accessToken");
     // For editing, the endpoint might be an update endpoint
     const response = await axios.post(
-      "http://localhost:8069/api/real-estate/ads/update",
+     `${apiBaseURL}/real-estate/ads/update`,
       params,
       {
         headers: {
@@ -724,11 +725,55 @@ export const fetchMyPaymentHistory = async (params:any) => {
     const accessToken = localStorage.getItem("accessToken");
     // For editing, the endpoint might be an update endpoint
     const response = await axios.post(
-      "http://localhost:8069/api/payment/getPaymentByUserId",
+      `${apiBaseURL}/payment/getPaymentByUserId`,
       params,
      
     );
     
+    
+    return response;
+   
+  } catch (error) {
+    console.error("API Error (Get Profile):", error);
+  }
+};
+
+
+
+export const createandUpdatesAds = async (params:any,isEditMode:boolean) => {
+  const url = isEditMode
+  ? `${apiBaseURL}/real-estate/ads/update`
+  : `${apiBaseURL}/real-estate/ads/create`;
+  const accessToken = localStorage.getItem("accessToken");
+  const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
+ 
+  try {
+    const response = await axios.post(
+      url,
+      params,
+      
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`, // Send access token
+        },
+      }
+    );
+
+    
+    
+    return response;
+   
+  } catch (error) {
+    console.error("API Error (Get Profile):", error);
+  }
+};
+export const createPayment = async (params:any) => {
+  try {
+    const response = await axios.post(
+      `${apiBaseURL}/payment/doPayment`,
+      params,
+    );
     
     return response;
    
