@@ -51,8 +51,15 @@ const MYLayout = ({
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [companydata, setCompanyData] = useState({ name: "A",logo:'' });
-  const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
+  // const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
+  let userData:any={}
  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
+      // Your code that uses userData...
+    }
+  }, []);
   const fetchcompanydetails = useCallback(async () => {
     const response = await getCompanydetails("");
 setCompanyData(response.result);
