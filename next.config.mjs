@@ -83,42 +83,39 @@
 //     document: "/offline", // Specify a fallback document for offline use
 //   },
 // })(nextConfig);
-
-
 import withPWA from 'next-pwa';
 
 /** @type {import('next').NextConfig} */
-
 const nextConfig = {
   reactStrictMode: true,
-      async headers() {
-      return [
-        {
-          source: "/api/:path*",
-          headers: [
-            {
-              key: "Access-Control-Allow-Origin",
-              value: "*", // Change this to restrict specific domains
-            },
-            {
-              key: "Access-Control-Allow-Methods",
-              value: "GET,POST,PUT,DELETE,OPTIONS",
-            },
-            {
-              key: "Access-Control-Allow-Headers",
-              value: "Content-Type, Authorization",
-            },
-          ],
-        },
-      ];
-    },
+  async headers() {
+    return [
+      {
+        source: "/api/:path*",
+        headers: [
+          {
+            key: "Access-Control-Allow-Origin",
+            value: "*", // Adjust this value to restrict domains if needed
+          },
+          {
+            key: "Access-Control-Allow-Methods",
+            value: "GET,POST,PUT,DELETE,OPTIONS",
+          },
+          {
+            key: "Access-Control-Allow-Headers",
+            value: "Content-Type, Authorization",
+          },
+        ],
+      },
+    ];
+  },
   async rewrites() {
     return [
       {
-        // All calls to /api/* are proxied to your backend.
+        // Any request to /api/:path* on your Vercel domain is proxied
+        // to your backend at http://16.24.17.78/api/:path*
         source: "/api/:path*",
-        destination: "http://16.24.17.78/:path*",
-        
+        destination: "http://16.24.17.78/api/:path*",
       },
     ];
   },
