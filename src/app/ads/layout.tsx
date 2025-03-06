@@ -26,11 +26,7 @@ export default function Home({children}:any) {
   const isFetched = useRef(false);
 
   const fetchProperties = useCallback(async () => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (!accessToken) {
-      router.push("/login");
-      return;
-    }
+    
 
     try {
       setLoading(true);
@@ -49,11 +45,7 @@ export default function Home({children}:any) {
   }, [page, filters]);
 
   const fetchAdmintredning = useCallback(async () => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (!accessToken) {
-      router.push("/login");
-      return;
-    }
+   
 
     try {
       setLoading(true);

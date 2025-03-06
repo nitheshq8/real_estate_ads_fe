@@ -712,3 +712,27 @@ export const adsUpdate = async (params:any) => {
     console.error("API Error (Get Profile):", error);
   }
 };
+
+
+
+
+export const fetchMyPaymentHistory = async (params:any) => {
+  try {
+    const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
+
+    
+    const accessToken = localStorage.getItem("accessToken");
+    // For editing, the endpoint might be an update endpoint
+    const response = await axios.post(
+      "http://localhost:8069/api/payment/getPaymentByUserId",
+      params,
+     
+    );
+    
+    
+    return response;
+   
+  } catch (error) {
+    console.error("API Error (Get Profile):", error);
+  }
+};

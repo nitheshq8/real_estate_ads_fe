@@ -118,6 +118,7 @@
 
 // export default PaymentHistory;
 "use client";
+import { fetchMyPaymentHistory } from '@/services/api';
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 
@@ -130,18 +131,15 @@ function PaymentHistory() {
   }, []);
 
   const fetchPaymentHistory = async () => {
-    const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
-    
+  
     try {
       setMessage('');
-      const response = await axios.post(
-        'http://localhost:8069/api/payment/getPaymentByUserId',
-        {
-          "params": {
-            user_id: userData.user_id
-          }
+      const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
+      const response:any= await fetchMyPaymentHistory( {
+        "params": {
+          user_id: userData.user_id
         }
-      );
+      })
       console.log("---------response", response?.data?.result?.data);
       setPayments(response?.data?.result?.data || []);
     } catch (error) {
