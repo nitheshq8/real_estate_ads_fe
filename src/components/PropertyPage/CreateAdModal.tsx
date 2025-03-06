@@ -393,7 +393,7 @@ const response= await createandUpdatesAds(   {
        onClick={(e) => {
         e.preventDefault();
         // Check for active subscription plan; if none, open the subscription error modal.
-        if (!mysubscriptionPlan || mysubscriptionPlan.length <=10) {
+        if (!mysubscriptionPlan || mysubscriptionPlan.length <=0) {
           setShowSubErrorModal(true);
         } else {
           setIsOpen(true);
