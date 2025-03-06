@@ -28,8 +28,11 @@ export async function rewrites() {
     return [
         {
             source: "/api/:path*",
-            destination: "http://localhost:8069/:path*", // Proxy API calls to Odoo
+            // destination: "http://localhost:8069/:path*",
+            destination: "http://16.24.17.78/:path*",
+            // http://16.24.17.78/odoo/users/10 // Proxy API calls to Odoo
         },
+        
     ];
 }
   
