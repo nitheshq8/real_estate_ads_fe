@@ -3,11 +3,11 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import UserAvatar from "./UserAvatar";
 
-export default function UserMenu({ userData }: { userData: any }) {
+export default function UserMenu({ userData, companydata }: any) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
-
+console.log("userData",userData)
   // Close menu when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -24,29 +24,42 @@ export default function UserMenu({ userData }: { userData: any }) {
       {userData?.user_id ? (
         <>
           {/* User Avatar - Toggle Menu */}
-          <button onClick={() => setMenuOpen(!menuOpen)}>
-            <UserAvatar name={userData.name} imageUrl={userData.imageUrl || ""} size={50} />
-          </button>
+
+          <div className="flex items-center">
+            <button onClick={() => setMenuOpen(!menuOpen)}>
+              <div
+                className="flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 overflow-hidden"
+                style={{ width: "50px", height: "50px" }}
+              >
+                <img
+                  src={`data:image/png;base64,${companydata?.logo}`}
+                  // src={companydata?.logo}
+                  alt={companydata?.name}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+            </button>
+            <h1 className="text-xl font-bold ml-2">{companydata?.name}</h1>
+          </div>
 
           {/* Dropdown Menu */}
           {menuOpen && (
             <div
               ref={menuRef}
-              className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-lg"
+              className="absolute w-48 bg-white dark:bg-gray-800 shadow-lg rounded-lg"
             >
               <button
                 onClick={() => router.push("/ads/profile")}
                 className="block w-full text-left p-2 hover:bg-gray-200 dark:hover:bg-gray-700"
               >
-                Profile
+                {/* <UserAvatar
+                  name={userData.name}
+                  imageUrl={userData.imageUrl || ""}
+                  size={50}
+                /> */}
+               
+              Profile
               </button>
-              {userData.is_admin&&
-              <button
-                onClick={() => router.push("/admin")}
-                className="block w-full text-left p-2 hover:bg-gray-200 dark:hover:bg-gray-700"
-              >
-                Admin Page
-              </button>}
             </div>
           )}
         </>

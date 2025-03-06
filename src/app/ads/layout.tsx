@@ -1,13 +1,8 @@
-
-
 "use client";
-import { useEffect, useState, useCallback, useRef, useMemo } from "react";
-import axios from "axios";
+import { useEffect, useState, useCallback, useRef } from "react";
 import MYLayout from "@/components/PropertyPage/MYLayout";
-import PropertyListing from "@/components/PropertyPage/PropertyListing";
-import AdDetailPage from "@/components/AdDetailPage/AdDetailPage";
-import Footer from "@/components/Footer";
-
+import { useRouter } from "next/navigation";
+import { fetchadminProperties, fetchadmintredningProperties, fetchAllCities, fetchAllProperties, fetchSubscriptionPlanByUserId, } from "@/services/api";
 export default function Home({children}:any) {
   const [filters, setFilters] = useState({
     property_type: "",
@@ -16,50 +11,70 @@ export default function Home({children}:any) {
     price_min: "",
     price_max: "",
   });
-
   const [properties, setProperties] = useState([]);
-  const [trendingProperties1, setTrendingProperties] = useState([]);
   const [cities, setCities] = useState([]);
-  const [propertyTypes, setPropertyTypes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedAds, setSelectedAds] = useState([]);
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  const [totalItems, setTotalItems] = useState(0);
+  const [mysubscriptionPlan, setMySubscriptionPlan] = useState<any>(null);
+  const [tredningProperties,setTredningProperties]= useState([])
+  
+  const router = useRouter();
+  const isFetched = useRef(false);
 
-  /** Fetch Properties */
-  const fetchProperties = async () => {
+  const fetchProperties = useCallback(async () => {
     const accessToken = localStorage.getItem("accessToken");
-        const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
-    
-    try {
-      const response = await axios.post("http://localhost:8069/api/real-estate/ads/search", {
-        jsonrpc: "2.0",
-        method: "call",
-        params: { limit: 10, offset: 0, ...filters,user_id:userData.user_id  },
-      });
+    if (!accessToken) {
+      router.push("/login");
+      return;
+    }
 
-      if (response.data?.result?.result?.ads) {
-        setProperties(response.data.result.result.ads);
-        setTrendingProperties(response.data.result.result.ads);
+    try {
+      setLoading(true);
+      const response = await fetchadminProperties(page, pageSize, filters);
+      if (response) {
+        setProperties(response.ads);
+        setTotalItems(response.total || 0);
       } else {
         throw new Error(response.data?.error?.message || "Failed to fetch properties");
       }
     } catch (error) {
-      setError("Error fetching properties.");
       console.error("API Error (Properties):", error);
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [page, filters]);
 
-  /** Fetch Cities */
-  const fetchCities = async () => {
+  const fetchAdmintredning = useCallback(async () => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      router.push("/login");
+      return;
+    }
+
     try {
-      const response = await axios.post("http://localhost:8069/api/real-estate/cities", {
-        jsonrpc: "2.0",
-        method: "call",
-        params: {},
-      });
-
-      if (response.data?.result?.result?.success) {
-        setCities(response.data.result.result.data);
+      setLoading(true);
+     const response = await  fetchadmintredningProperties();
+      if (response) {
+        setTredningProperties(response.data);
+        setTotalItems(response.total || 0);
+      } else {
+        throw new Error(response.data?.error?.message || "Failed to fetch properties");
+      }
+    } catch (error) {
+      console.error("API Error (Properties):", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [page, filters]);
+  const fetchCities = useCallback(async () => {
+    try {
+      const response = await fetchAllCities();
+      if (response?.success) {
+        setCities(response.data);
       } else {
         throw new Error(response.data?.error?.message || "Failed to fetch cities.");
       }
@@ -67,54 +82,47 @@ export default function Home({children}:any) {
       setError("Error fetching cities.");
       console.error("API Error (Cities):", error);
     }
-  };
-
- 
-
-  /** Fetch All Data in Parallel using `Promise.all` */
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      await Promise.all([fetchProperties(), fetchCities()]);
-    } catch (error) {
-      setError("Error fetching data.");
-    } finally {
-      setLoading(false);
-    }
   }, []);
 
-  /** Run Fetch Once on Mount & when Filters Change */
-  const isFetched = useRef(false);
-  const fetchAdDetailsMemoized = useMemo(() => fetchData, []);
-  
-  const fetchAdfetchPropertiessMemoized = useMemo(() => fetchProperties, []);
-  
-
+  const fetchsubscriptionPlan = useCallback(async () => {
+    try {
+      const response:any = await fetchSubscriptionPlanByUserId();
+     setMySubscriptionPlan(response?.data?.result)
+    } catch (error) {
+      setError("Error fetching cities.");
+      console.error("API Error (Cities):", error);
+    }
+  }, []);
   useEffect(() => {
-      if (!isFetched.current) {
-        fetchAdDetailsMemoized();
-          isFetched.current = true;
-      }
-      
-  }, [filters]);
+    // if (!isFetched.current) {
+         Promise.all([fetchProperties(), fetchCities(),fetchsubscriptionPlan(),fetchAdmintredning()]);
+    //   isFetched.current = true;
+    // }
+  }, [fetchProperties, fetchCities,filters]);
+
   const handleAdChange = useCallback(() => {
     fetchProperties();
   }, [fetchProperties]);
 
-  const toggleSelectAd = (ad: { id: any; }) => {
-    setSelectedAds((prev:any) => {
-      const exists = prev.find((item: { id: any; }) => item.id === ad.id);
-      return exists ? prev.filter((item: { id: any; }) => item.id !== ad.id) : [...prev, ad];
+  
+  const toggleSelectAd = (adOrArray: { id: any, [key: string]: any } | { id: any, [key: string]: any }[]) => {
+    setSelectedAds((prev: any) => {
+      if (Array.isArray(adOrArray)) {
+        const allSelected = properties.length === prev.length;
+  
+        return allSelected ? [] : properties.map((property: any) => ({ ...property }));
+      }
+  
+      // Toggle individual selection
+      return prev.some((item: any) => item.id === adOrArray.id)
+        ? prev.filter((item: any) => item.id !== adOrArray.id)
+        : [...prev, adOrArray];
     });
   };
   
   return (
-    <div>
-      <MYLayout properties={properties} cities={cities}  selectedAds={selectedAds} isdetailpage={false} handleAdChange={handleAdChange}>
-      {children}
-      </MYLayout>
-     
-    </div>
+    <MYLayout properties={tredningProperties} cities={cities} selectedAds={selectedAds} handleAdChange={handleAdChange} mysubscriptionPlan={mysubscriptionPlan}>
+     {children}
+    </MYLayout>
   );
 }

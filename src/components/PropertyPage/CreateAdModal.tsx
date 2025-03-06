@@ -6,7 +6,8 @@ import { FilePenLine, Trash2 } from "lucide-react";
 
 import imageCompression from "browser-image-compression";
 import { useRouter } from "next/navigation";
-import SubscriptionPlanDetails from "../SubscriptionPlanDetails";
+import SubscriptionPlanDetails from "../Subscription/SubscriptionPlanDetails";
+import { adsaddMultiImage, deleteadsImage } from "@/services/api";
 
 const propertyTypes = [
   { id: "apartment", name: "Apartment" },
@@ -55,8 +56,6 @@ const CreateAdModal = ({ ad, isEditMode, cities, handleAdChange ,mysubscriptionP
     additional_images: [],
     show_it_in_portal: false, // New field: checkbox default checked.
   });
-  console.log("ad?.additional_images", ad?.additional_images[0]);
-
   useEffect(() => {
     setLoading(true);
     if (isEditMode && ad && cities.length > 0) {
@@ -73,7 +72,7 @@ const CreateAdModal = ({ ad, isEditMode, cities, handleAdChange ,mysubscriptionP
         { id: "rent", name: "For Rent" },
       ];
       const matchedReason = reasons.find((r: any) => r.id === ad.reason);
-      console.log("matchedCity", matchedReason, "000", ad);
+     
       setFormData({
         // ...prev,
         id: ad.id,
@@ -94,7 +93,6 @@ const CreateAdModal = ({ ad, isEditMode, cities, handleAdChange ,mysubscriptionP
         show_it_in_portal:
           ad.show_it_in_portal !== undefined ? ad.show_it_in_portal : false,
       });
-      console.log("additional_images formdaat", formData);
       setAdditionalImages([...ad?.additional_images]);
       setCity(matchedCity.id); // ✅ Set the city state with the ID
     }
@@ -307,35 +305,28 @@ const CreateAdModal = ({ ad, isEditMode, cities, handleAdChange ,mysubscriptionP
       } finally {
         setLoading(false);
       }
-      console.log("Form is valid. Submitting...");
     } else {
       // Show error messages
       setLoading(false);
-      console.log("Validation errors:", validationResult);
     }
   };
   const deletedImage = async (index: number, imageId?: number) => {
-    if (isEditMode && imageId) {
+
+
+    if ( imageId) {
       try {
         setLoading(true);
-        const response = await axios.post(
-          "http://localhost:8069/api/real-estate/ads/delete-image",
+        
+        const response:any = await deleteadsImage(
           {
-            jsonrpc: "2.0",
-            method: "call",
-            params: {
-              image_id: imageId,
-              ad_id: ad?.id,
-            },
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
-          }
-        );
-        console.log("-------------", response?.data);
+        jsonrpc: "2.0",
+        method: "call",
+        params: {
+          image_id: imageId,
+          ad_id: ad?.id,
+        },
+      }
+    )
         setLoading(false);
         if (response.data?.result?.result?.success) {
           setAdditionalImages((prev) => prev.filter((_, i) => i !== index));
@@ -358,24 +349,16 @@ const CreateAdModal = ({ ad, isEditMode, cities, handleAdChange ,mysubscriptionP
       if (additionalImages.length > 4) {
         setError("Additional Images less then 4");
       } else {
-        const response = await axios.post(
-          "http://localhost:8069/api/real-estate/ads/add-image",
-          {
-            jsonrpc: "2.0",
-            method: "call",
-            params: {
-              images: additionalImages,
-              ad_id: ad?.id,
-            },
+        const response:any = await adsaddMultiImage( {
+          jsonrpc: "2.0",
+          method: "call",
+          params: {
+            images: additionalImages,
+            ad_id: ad?.id,
           },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
-          }
-        );
-        console.log("-------------", response?.data.result?.result);
+        },)
+        
+       
 
         if (response.data?.result?.result?.success) {
           // setAdditionalImages((prev) => prev.filter((_, i) => i !== index));
@@ -401,7 +384,7 @@ const CreateAdModal = ({ ad, isEditMode, cities, handleAdChange ,mysubscriptionP
        onClick={(e) => {
         e.preventDefault();
         // Check for active subscription plan; if none, open the subscription error modal.
-        if (!mysubscriptionPlan || mysubscriptionPlan.length <=0) {
+        if (!mysubscriptionPlan || mysubscriptionPlan.length <=10) {
           setShowSubErrorModal(true);
         } else {
           setIsOpen(true);
@@ -409,20 +392,23 @@ const CreateAdModal = ({ ad, isEditMode, cities, handleAdChange ,mysubscriptionP
         setError("");
         setMessage("");
       }}
-        className=" p-2  w-full md:bg-blue-700 hover:bg-blue-900 bg-transparent min-w-fit  text-white   rounded-md"
+        className="md:p-2  md:bg-blue-700 hover:bg-blue-900 bg-white min-w-fit  md:text-white   rounded-md"
       >
         {/* <FilePenLine />/ */}
         {isEditMode ? `Edit Ads` : "add new ads"}
       </button>
   {/* Subscription Error Modal */}
   {showSubErrorModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50  flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h2 className="text-xl font-bold mb-4">No Active Subscription</h2>
             <p className="mb-4">
               You don't have any active plan. Please subscribe to a plan to add new ads.
             </p>
+            <div className="max-h-96 overflow-auto">
             <SubscriptionPlanDetails/>
+            </div>
+   
             <button
               onClick={() => setShowSubErrorModal(false)}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"

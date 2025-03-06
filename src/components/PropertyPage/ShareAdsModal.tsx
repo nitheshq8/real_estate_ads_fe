@@ -20,7 +20,6 @@ const ShareAdsModal = ({ selectedAds ,mysubscriptionPlan}: any) => {
   const [error, setError] = useState("");
   const [sharedlink, setSharedLink] = useState("");
   const [copied, setCopied] = useState(false);
-console.log("selectedAds",selectedAds);
 
   const [showKuwaitFinder, setShowKuwaitFinder] = useState(true);
   useEffect(() => {
@@ -77,8 +76,7 @@ console.log("selectedAds",selectedAds);
         setMessage(`Share Link Created: ${response.data?.result?.result?.data?.share_url}`);
       } else {
 
-console.log("----response?.data?.resultn--0",response?.data?.result?.error.message);
-        setError(response?.data?.result?.error.message);
+setError(response?.data?.result?.error.message);
       }
     } catch (err) {
       // setError("Error sharing ads.",err);

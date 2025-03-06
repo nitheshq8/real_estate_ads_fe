@@ -1,14 +1,13 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AuthContext } from '@/contexts/AuthContext';
 import Loader from '@/components/Loader';
-import LoginRegisterModal from '@/components/Aid/LoginRegisterModal';
 
 const withAuth = (WrappedComponent: React.ComponentType) => {
     const AuthComponent = (props: any) => {
         const router = useRouter();
         const[isLoading,setIsLoading]= useState(false)
-        const { user, setUser } = useContext(AuthContext);
+        const { user, setUser }:any ={}
+        //  useContext();
         const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
         useEffect(() => {
@@ -32,7 +31,8 @@ const withAuth = (WrappedComponent: React.ComponentType) => {
             return  <Loader />
         }
         if (isCheckingAuth) {
-            return  <LoginRegisterModal closeModal={ ()=>router.push(`/`)} />
+            return <></>
+            // <LoginRegisterModal closeModal={ ()=>router.push(`/`)} />
         }
 
         return <WrappedComponent {...props} />;

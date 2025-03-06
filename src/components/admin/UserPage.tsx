@@ -1,14 +1,3 @@
-// "use client";
-// const usersData  = await axios.post("http://localhost:8069/api/allusers",{
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     data:{"name":''},
-//   });
-//   console.log("usersData.result?.data",usersData);
-  
-//   setUsers(usersData.data?.result?.data);
-
   "use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -31,9 +20,7 @@ const UserPage = () => {
     },
     data:{"name":''},
   });
-  console.log("usersData.result?.data",usersData);
-  
-  setUsers(usersData.data?.result?.data);
+ setUsers(usersData.data?.result?.data);
       } catch (err) {
         setError("Error fetching users");
       } finally {

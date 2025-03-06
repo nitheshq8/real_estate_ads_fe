@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import axios from "axios";
 import ShareAdsModal from "../PropertyPage/ShareAdsModal";
 import CreateAdModal from "../PropertyPage/CreateAdModal";
 import {
@@ -42,11 +41,8 @@ const AdDetailPage = ({ cities, setFilters ,mysubscriptionPlan}: any) => {
         if (!isFetchedDetail.current) {
           fetchPropertiesDetailsByIdandUpdateView(adId, userData)
             .then(({ details, visits }) => {
-              console.log("Ad Details:", details);
-              console.log("Visits Update Response:", visits);
               const detailsData = details.result?.result;
-              console.log("detailsData", detailsData);
-
+           
               setAdDetails(detailsData?.data || null);
               const myf = {
                 property_type: detailsData?.property_type,
@@ -117,6 +113,7 @@ const AdDetailPage = ({ cities, setFilters ,mysubscriptionPlan}: any) => {
 
         if (response.data.result.success) {
           alert("Ad deleted successfully!");
+          router.push("/"); 
           handleAdChange();
           // Optionally, you can trigger a state change to remove the ad from the UI
         } else {
@@ -246,7 +243,7 @@ const AdDetailPage = ({ cities, setFilters ,mysubscriptionPlan}: any) => {
                 cities={cities}
                 ad={adDetails}
                 isEditMode={true}
-                handleAdChange={ ()=>router.refresh()}
+                handleAdChange={ ()=>router.push('/')}
                 mysubscriptionPlan={mysubscriptionPlan}
               />
             </div>

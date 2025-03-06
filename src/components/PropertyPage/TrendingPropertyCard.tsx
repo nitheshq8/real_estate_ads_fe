@@ -2,32 +2,18 @@ import Image from "next/image";
 
 const TrendingPropertyCard = ({ property }:any) => {
   const url =property?.image
-  ? `${`data:image/png;base64,${property?.image}`}` : 'https://placehold.co/600x400.png?text=${property.name}'
+  ? `${`data:image/png;base64,${property?.image}`}` : `https://placehold.co/600x400.png?text=${property.name}`
 
   return (
-    <div className="bg-white shadow-md rounded-xl overflow-hidden p-4">
+    <div className="bg-white shadow-md border rounded-xl   hover:border-blue-600 overflow-hidden p-4">
       {/* Property Image */}
       <div className="relative w-full h-40 bg-gray-200 rounded-lg overflow-hidden">
-        {property.image ? (
-          <img
-          
-          // src={
-          //   property?.image
-          //     ? `${`data:image/png;base64,${property?.image}`}`
-          //     : `https://placehold.co/600x400.png?text=${property.name}`
-          // }
+         <img
           src={url}
-            alt={property.name}
-            // layout="fill"
-            // objectFit="cover"
-
+          alt={property.name}
           className="rounded-t-lg h-60 w-full"
-          />
-        ) : (
-          <div className="flex items-center justify-center h-full text-gray-500">
-            No Image Available
-          </div>
-        )}
+        />
+        
       </div>
 
       {/* Property Details */}

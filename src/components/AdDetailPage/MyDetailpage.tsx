@@ -2,10 +2,9 @@
 
 import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import axios from "axios";
 import Loader from "../Loader"; // Adjust to your actual Loader import
 import { ArrowLeft, Trash2 } from "lucide-react";
-import { fetchPropertiesDetailsByIdandUpdateView } from "@/services/api";
+import { adsdelete, adsUpdate, deleteadsImage, fetchPropertiesDetailsByIdandUpdateView } from "@/services/api";
 // import ShareAdsModal from "../PropertyPage/ShareAdsModal"; // If you want to include share functionality
 
 // Example property types
@@ -78,12 +77,8 @@ export default function AdDetailWithEdit({ cities, setFilters }: any) {
         // Example call: fetch property details
         fetchPropertiesDetailsByIdandUpdateView(adId, userData)
             .then(({ details, visits }) => {
-              console.log("Ad Details:", details);
-              console.log("Visits Update Response:", visits);
               const detailsData = details.result?.result;
-              console.log("detailsData", detailsData);
-
-              setAdDetails(detailsData?.data || null);
+             setAdDetails(detailsData?.data || null);
               const myf = {
                 property_type: detailsData?.property_type,
                 reason: detailsData?.reason,
@@ -138,18 +133,19 @@ export default function AdDetailWithEdit({ cities, setFilters }: any) {
     const confirmed = window.confirm("Are you sure you want to delete this ad?");
     if (confirmed) {
       try {
-        const response = await axios.post(
-          "http://localhost:8069/api/real-estate/ads/delete",
-          {
-            jsonrpc: "2.0",
-            method: "call",
-            params: { ad_id: adId },
-          }
-        );
-        if (response.data.result?.success) {
-          alert("Ad deleted successfully!");
+
+        const response:any = await adsdelete({
+          jsonrpc: "2.0",
+          method: "call",
+          params: { ad_id: adId },
+        })
+        
+        if (response.result?.success) {
+         
           // Possibly navigate away or refresh
+
           router.push("/"); 
+          alert("Ad deleted successfully!");
         } else {
           alert("Failed to delete ad. Please try again.");
         }
@@ -247,10 +243,9 @@ export default function AdDetailWithEdit({ cities, setFilters }: any) {
     if (imageId) {
       try {
         setLoading(true);
-        // Example call to remove an image
-        const response = await axios.post(
-          "http://localhost:8069/api/real-estate/ads/delete-image",
-          {
+        
+        const response:any = await deleteadsImage(
+              {
             jsonrpc: "2.0",
             method: "call",
             params: {
@@ -258,8 +253,7 @@ export default function AdDetailWithEdit({ cities, setFilters }: any) {
               ad_id: adDetails?.id,
             },
           }
-        );
-
+        )
         if (response.data?.result?.result?.success) {
           setAdditionalImages((prev) => prev.filter((_, i) => i !== index));
         } else {
@@ -306,22 +300,13 @@ export default function AdDetailWithEdit({ cities, setFilters }: any) {
     try {
       const accessToken = localStorage.getItem("accessToken");
       // For editing, the endpoint might be an update endpoint
-      const response = await axios.post(
-        "http://localhost:8069/api/real-estate/ads/update",
-        {
+      const response = await adsUpdate(
+       {
           jsonrpc: "2.0",
           method: "call",
           params: {
             ...formData,
             additional_images: [], 
-            // or handle new images as needed 
-            // if you want to upload them separately or pass them all at once
-          },
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
           },
         }
       );

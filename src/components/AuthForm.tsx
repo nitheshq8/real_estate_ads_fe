@@ -101,9 +101,7 @@ const AuthForm: React.FC = () => {
         alert(isRegister ? "Account created! successful " : "Login successful!");
         router.push("/");
       } else {
-        console.log("-response",response);
-        
-        alert(response?.error ||response.error?.message|| "Something went wrong. Please try again.");
+       alert(response?.error ||response.error?.message|| "Something went wrong. Please try again.");
       }
     } catch (error) {
       alert("Error: Could not complete the request.");

@@ -1,5 +1,4 @@
 "use client";
-import axios from "axios";
 import { useState, useEffect } from "react";
 
 interface Filters {
@@ -25,7 +24,6 @@ const propertyTypes = [
 ];
 
 const PropertyFilters=({ filters, setFilters,cities ,handleAdChange,fetchPropertiesWithFilter}:any) => {
-  console.log("____________cities",cities);
   
   const [propertyType, setPropertyType] = useState("");
   const [propertyCategory, setPropertyCategory] = useState("");
@@ -37,26 +35,7 @@ const PropertyFilters=({ filters, setFilters,cities ,handleAdChange,fetchPropert
   const [priceMin, setPriceMin] = useState("");
   const [priceMax, setPriceMax] = useState("");
 
-  // Fetch Property Types and Cities when the component mounts
- 
-
-
   
-  // const handleApplyFilter = () => {
-  //   console.log("Applying Filters...",propertyType);
-  //   const myf = {
-  //     property_type: propertyType,
-  //     reason: propertyCategory,
-  //     city: city,
-  //   };
-    
-  //   // fetchPropertiesWithFilter({
-  //   //   property_type: propertyType,
-  //   //   reason: propertyCategory,
-  //   //   city: city,
-  //   // })
-    
-  // };
   const handleApplyFilter = () => {
     setFilters((prev: any) => ({
       ...prev,

@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import axios from "axios";
 import { FiArrowLeft } from "react-icons/fi";
 import { fetchPropertiesDetailsById } from "@/services/api";
 

@@ -238,7 +238,7 @@ const SharedLinksTable = () => {
     {/* Button to Open Modal */}
     <div className="container mx-auto">
       <button
-        className="p-2 md:bg-blue-700 border hover:bg-blue-900  min-w-fit text-white rounded-md"
+        className="md:p-2  md:bg-blue-700 hover:bg-blue-900 bg-white min-w-fit  md:text-white   rounded-md"
         onClick={() => setIsModalOpen(true)}
       >
         View Shared Ads

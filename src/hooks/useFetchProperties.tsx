@@ -10,8 +10,7 @@ interface Filters {
 }
 
 const useFetchProperties = (filters: Filters) => {
-    console.log("----hooks");
-    
+  
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

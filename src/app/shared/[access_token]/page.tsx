@@ -1,13 +1,10 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import axios from "axios";
 import { FiMapPin, FiArrowRight } from "react-icons/fi";
-import UserAvatar from "@/hooks/UserAvatar";
-import { fetchAllCities, getCompanydetailsBytoken } from "@/services/api";
+import { fetchAllCities, fetchSharedAdsByToken, getCompanydetailsBytoken } from "@/services/api";
 import PropertyFilters from "@/components/PropertyPage/PropertyFilters";
 import Loader from "@/components/Loader";
-// If you put the loader component in the same file, remove this import.
 
 const SharedView = () => {
   const { access_token } = useParams();
@@ -67,7 +64,10 @@ const SharedView = () => {
     setError(null);
 
     try {
-      const response = await axios.post("http://localhost:8069/api/real-estate/shared-linksBytoken", {
+
+      
+      const response:any = await fetchSharedAdsByToken( 
+  {
         jsonrpc: "2.0",
         id: null,
         params: {
@@ -76,7 +76,8 @@ const SharedView = () => {
           limit: pageSize,
           offset: (page - 1) * pageSize,
         },
-      });
+      }
+       );
 
       // Suppose server returns: { result: { data: { ad_details, total } } }
       const result = response.data.result;
@@ -185,9 +186,7 @@ const SharedView = () => {
                 >
                   View Details <FiArrowRight className="ml-2" />
                 </button>
-                <button className="border border-gray-700 text-gray-700 px-4 py-2 rounded-lg flex items-center">
-                  <FiMapPin className="mr-2" /> Location
-                </button>
+             
               </div>
             </div>
           </div>

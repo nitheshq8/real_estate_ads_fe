@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback, useRef } from "react";
 import MYLayout from "@/components/PropertyPage/MYLayout";
-import PropertyListing from "@/components/PropertyPage/PropertyListing";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/Loader";
 import { fetchadminProperties, fetchadmintredningProperties, fetchAllCities, fetchAllProperties, fetchSubscriptionPlanByUserId, } from "@/services/api";
@@ -71,7 +70,6 @@ export default function Home() {
         throw new Error(response.data?.error?.message || "Failed to fetch properties");
       }
     } catch (error) {
-    //   setError("Error fetching properties.");
       console.error("API Error (Properties):", error);
     } finally {
       setLoading(false);
@@ -115,7 +113,6 @@ export default function Home() {
   const toggleSelectAd = (adOrArray: { id: any, [key: string]: any } | { id: any, [key: string]: any }[]) => {
     setSelectedAds((prev: any) => {
       if (Array.isArray(adOrArray)) {
-        // Check if all properties are already selected
         const allSelected = properties.length === prev.length;
   
         return allSelected ? [] : properties.map((property: any) => ({ ...property }));

@@ -9,7 +9,7 @@ import { FiMenu } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import { useParams } from "next/navigation";
 import UserMenu from "@/hooks/UserMenu";
-import { getCompanydetailsBytoken } from "@/services/api";
+import { getCompanydetails } from "@/services/api";
 
 const navItems = [
   { name: "Home", url: "/" },
@@ -18,38 +18,35 @@ const navItems = [
   { name: "Services", url: "/ads/services" },
 ];
 
-export default function Layout({
+export default function MYLayout({
   children,
 }: {
   children: ReactNode;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [companydata, setCompanyData] = useState<any>({ name: "A" });
+  const [companydata, setCompanyData] = useState({ name: "A" });
   const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
   const { access_token } = useParams();
 
   // Fetch company details
-  const getCompanyDetails = useCallback(async () => {
-    if (!access_token) return;
+  const fetchcompanydetails = useCallback(async () => {
     try {
-      const response: any = await getCompanydetailsBytoken({ access_token });
-      if (response?.data?.result?.success) {
-        setCompanyData(response.data.result.data);
-      }
+      const response: any = await getCompanydetails("");
+      setCompanyData(response.result);
     } catch (err) {
       console.error("Error fetching company details:", err);
     }
-  }, [access_token]);
+  }, []);
 
   useEffect(() => {
-    getCompanyDetails();
-  }, [getCompanyDetails]);
+    fetchcompanydetails();
+  }, [fetchcompanydetails]);
 
   return (
-    <div className="relative flex flex-col h-screen ">
+    <div className="relative flex flex-col h-screen">
       {/* Header */}
       <header className="bg-white shadow-md p-4 flex justify-around items-center fixed top-0 w-full z-50">
-        <div className="flex items-center">
+        {/* <div className="flex items-center">
           <div
             className="flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 overflow-hidden"
             style={{ width: "50px", height: "50px" }}
@@ -61,7 +58,7 @@ export default function Layout({
             />
           </div>
           <h1 className="text-xl font-bold ml-2">{companydata?.name}</h1>
-        </div>
+        </div> */}
 
         {/* Desktop View (Hidden on Mobile) */}
         <div className="hidden md:flex items-center min-w-fit justify-between">

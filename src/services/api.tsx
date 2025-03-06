@@ -5,8 +5,8 @@ const isProduction = false; // Change to false for development
 const API_BASE_URL = "http://localhost:8069/api/user";
 
 export const apiBaseURL = isProduction
-  ? "http://localhost:8069/api"
-  : "http://localhost:8069/api";
+  ? "http://localhost:80/api"
+  : "http://localhost:80/api";
 
 export const imgBaseURL = isProduction
   ? "https://portal.abwabalkhair.com"
@@ -57,8 +57,7 @@ export const getLocalStorageData = (): LocalStorageData | null => {
 
 // Function to set data in local storage
 export const setLocalStorageData = (data: LocalStorageData): void => {
-  console.log("++++++++locl", data);
-  localStorage.setItem("accessToken", data.accessToken);
+ localStorage.setItem("accessToken", data.accessToken);
   localStorage.setItem("aiduser", JSON.stringify(data.user));
 };
 
@@ -80,7 +79,6 @@ export const registerUser = async (data: {
       method: "call",
       params: data,
     });
-console.log("response.data.result.success",response.data.result);
 
     if (response.data.result.success) {
       const userData: any = response?.data?.result?.data;
@@ -103,8 +101,7 @@ export const loginUser = async (data: { email: string; password: string }) => {
       jsonrpc: "2.0",
       method: "call",
       params: data,
-    });
-console.log("--------",response.data.result?.error);
+    })
 
     if (response.data.result.success) {
       const userData: User = response?.data?.result?.data;
@@ -131,7 +128,6 @@ export const forgotPassword = async (email: string) => {
   });
   
   if (response.data.result.success) {
-    console.log("_____________",response);
     return response.data.result
   } else {
     return { success: false, error: response.data.result.error };
@@ -145,7 +141,6 @@ export const resetPassword = async (email: string, old_password:string,new_passw
     params: { email,old_password, new_password },
   });
   
-  console.log("========0",response.data?.result?.result);
   if (response.data?.result?.result.success) {
     return response.data?.result?.result
   } else {
@@ -174,7 +169,6 @@ export const changeUserPassword = async (data: {
   }
 };
 
-// http://localhost:8069/api/real-estate/ads/search
 export const fetchRealEstateAds = async (data: any) => {
   return apiInstance.post("/real-estate/ads/search", {
     limit: 10,
@@ -189,7 +183,7 @@ export const fetchRealEstateAds = async (data: any) => {
 
 
 export const createShrareLink = async (params: any) => {
-  console.log("params",params);
+  
   
   const accessToken = localStorage.getItem("accessToken");
     const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
@@ -214,7 +208,6 @@ export const createShrareLink = async (params: any) => {
 
 
 export const getAllSharedLink = async () => {
-  console.log("params");
   
   try {
     const accessToken = localStorage.getItem("accessToken");
@@ -232,7 +225,6 @@ export const getAllSharedLink = async () => {
           },
         }
   );
-  console.log("response?.data?.result++",response?.data?.result?.result);
   
  return response?.data?.result?.result;
   } catch (error) {
@@ -245,14 +237,13 @@ export const getAllSharedLink = async () => {
 
 
 export const searchSharedLinkById = async (params:any) => {
-  console.log("params");
-  
+ 
   try {
     const accessToken = localStorage.getItem("accessToken");
     const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
 
     const response = await    axios.post(
-        "http://localhost:8069/api/real-estate/share/search",
+        `${apiBaseURL}/real-estate/share/search`,
         {
           jsonrpc: "2.0",
           method: "call",
@@ -264,8 +255,7 @@ export const searchSharedLinkById = async (params:any) => {
           },
         }
       );
-      console.log("response?.data?.result++",response?.data?.result?.result);
-  
+    
  return response?.data?.result?.result;
   } catch (error) {
     throw error;
@@ -273,14 +263,14 @@ export const searchSharedLinkById = async (params:any) => {
 };
 
 export const searchSharedLink = async (params:any) => {
-  console.log("params");
+  
   
   try {
     const accessToken = localStorage.getItem("accessToken");
     const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
 
     const response = await    axios.post(
-        "http://localhost:8069/api/real-estate/share/search",
+        `${apiBaseURL}/real-estate/share/search`,
         {
           jsonrpc: "2.0",
           method: "call",
@@ -324,7 +314,6 @@ export const searchSharedLink = async (params:any) => {
 //         },
 //       }
 // );
-  console.log("response?.data?.result++",response?.data?.result?.result);
   
  return response?.data?.result?.result;
   } catch (error) {
@@ -336,7 +325,7 @@ export const searchSharedLink = async (params:any) => {
 
 export const fetchAllCities = async () => {
   try {
-    const response = await axios.post("http://localhost:8069/api/real-estate/cities", {
+    const response = await axios.post(`${apiBaseURL}/real-estate/cities`, {
       jsonrpc: "2.0",
       method: "call",
       params: {},
@@ -355,7 +344,7 @@ export const fetchAllCities = async () => {
 export const fetchSubscriptionPlanByUserId = async () => {
   const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
   try {
-    const response = await axios.post("http://localhost:8069/api/subscriptions/user_subscription_plans", {
+    const response = await axios.post(`${apiBaseURL}/subscriptions/user_subscription_plans`, {
       jsonrpc: "2.0",
       method: "call",
       params:{user_id:userData.user_id}
@@ -373,7 +362,7 @@ export  const fetchadminProperties = async (page: any, pageSize: number, filters
 
 
   try {
-    const response = await axios.post("http://localhost:8069/api/real-estate/ads/search", {
+    const response = await axios.post(`${apiBaseURL}/real-estate/ads/search`, {
       jsonrpc: "2.0",
       method: "call",
       params: { limit: 10, offset: (page - 1) * pageSize , ...filters,user_id:userData.user_id  },
@@ -397,17 +386,14 @@ export  const fetchadmintredningProperties = async () => {
   const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
 
 
-  console.log("---response--fetchadmintredningProperties00");
 
   try {
-    const response = await axios.post("http://localhost:8069/api/real-estate/ads/trendingByUserID", {
+    const response = await axios.post(`${apiBaseURL}/real-estate/ads/trendingByUserID`, {
       jsonrpc: "2.0",
       method: "call",
       params: { user_id:userData.user_id  },
     });
 
-    console.log("---response--fetchadmintredningProperties",response);
-    
     if (response.data?.result?.result?.data) {
       // setProperties(response.data.result.result.ads);
       // setTrendingProperties(response.data.result.result.ads);
@@ -427,7 +413,7 @@ export  const fetchAllProperties = async (page: any, pageSize: number, filters: 
 
 
   try {
-    const response = await axios.post("http://localhost:8069/api/real-estate/ads/searchallads", {
+    const response = await axios.post(`${apiBaseURL}/real-estate/ads/searchallads`, {
       jsonrpc: "2.0",
       method: "call",
       params: { limit: 10, offset: (page - 1) * pageSize , ...filters,  },
@@ -452,7 +438,7 @@ export  const fetchPropertiesById = async (params: { user_id: any; property_type
       const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
   
   try {
-    const response = await axios.post("http://localhost:8069/api/real-estate/ads/search", {
+    const response = await axios.post(`${apiBaseURL}/real-estate/ads/search`, {
       jsonrpc: "2.0",
       method: "call",
       params:params,
@@ -472,12 +458,12 @@ export  const fetchPropertiesById = async (params: { user_id: any; property_type
 export const fetchPropertiesDetailsByIdandUpdateView = async (adId: string | string[], userData?: { user_id: any; }) => {
   try {
     const [detailsResponse, visitsResponse] = await Promise.all([
-      axios.post("http://localhost:8069/api/real-estate/ads/detail", {
+      axios.post(`${apiBaseURL}/real-estate/ads/detail`, {
         jsonrpc: "2.0",
         method: "call",
         params: { ad_id: adId, user_id: userData?.user_id },
       }),
-      axios.post("http://localhost:8069/api/real-estate/ads/update-visits", {
+      axios.post(`${apiBaseURL}/real-estate/ads/update-visits`, {
         jsonrpc: "2.0",
         method: "call",
         params: { ad_id: Number(adId) },
@@ -497,7 +483,7 @@ export const fetchPropertiesDetailsByIdandUpdateView = async (adId: string | str
 export const fetchPropertiesDetailsById = async (adId: string | string[], userData?: { user_id: any; }) => {
   try {
     const [detailsResponse, ] = await Promise.all([
-      axios.post("http://localhost:8069/api/real-estate/ads/detail", {
+      axios.post(`${apiBaseURL}/real-estate/ads/detail `, {
         jsonrpc: "2.0",
         method: "call",
         params: { ad_id: adId, user_id: userData?.user_id },
@@ -517,7 +503,7 @@ export const fetchMyProfile = async () => {
   try {
     const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
     if (!userData.user_id) return;
-    const response = await axios.post("http://localhost:8069/api/get_user_data", {
+    const response = await axios.post(`${apiBaseURL}/get_user_data`, {
       jsonrpc: "2.0",
       method: "call",
       params: { user_id: userData.user_id },
@@ -533,11 +519,24 @@ export const fetchMyProfile = async () => {
 
 export const updateMyProfile = async ({updatedData}:any) => {
   try {
-    console.log("updatedData",updatedData);
-    
     const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
     if (!userData.user_id) return;
-    const response = await axios.post("http://localhost:8069/api/update_user_data", {
+    const response = await axios.post(`${apiBaseURL}/update_user_data`, {
+      jsonrpc: "2.0",
+      params: updatedData,
+    });
+    // Adjust this if your API response structure differs.
+    return response;
+   
+  } catch (error) {
+    console.error("API Error (Get Profile):", error);
+  }
+};
+export const updateCompanyDetails = async ({updatedData}:any) => {
+  try {
+    const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
+    if (!userData.user_id) return;
+    const response = await axios.post(`${apiBaseURL}/company/update`, {
       jsonrpc: "2.0",
       params: updatedData,
     });
@@ -549,15 +548,12 @@ export const updateMyProfile = async ({updatedData}:any) => {
   }
 };
 
-
-
 export const deleteAds = async (params:any) => {
   try {
-    console.log("updatedData",params);
     
     const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
     if (!userData.user_id) return;
-    const response = await axios.post("http://localhost:8069/api/real-estate/ads/delete", {
+    const response = await axios.post(`${apiBaseURL}/real-estate/ads/delete`, {
       jsonrpc: "2.0",
       params: params,
     }, {
@@ -583,14 +579,12 @@ export const getCompanydetails = async (params:any) => {
   try {
     const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
 
-    console.log("getCompanydetails",userData);
     
     if (!userData.user_id) return;
-    const response = await axios.post("http://localhost:8069/api/company_detail_ByUserId", {
+    const response = await axios.post(`${apiBaseURL}/company_detail_ByUserId`, {
       jsonrpc: "2.0",
       params:{user_id: userData.user_id}
     },  );
-    console.log("getCompanydetails--res",response?.data?.result);
     // Adjust this if your API response structure differs.
     return response.data;
    
@@ -603,15 +597,115 @@ export const getCompanydetails = async (params:any) => {
 
 export const getCompanydetailsBytoken = async (params:any) => {
   try {
-    console.log("getCompanydetails",params);
-    
-    const response = await axios.post("http://localhost:8069/api/company/get-details-by-token", {
+   const response = await axios.post(`${apiBaseURL}/company/get-details-by-token`, {
       jsonrpc: "2.0",
       params:params
     }, 
   
   );
     // Adjust this if your API response structure differs.
+    return response;
+   
+  } catch (error) {
+    console.error("API Error (Get Profile):", error);
+  }
+};
+
+
+export const fetchSharedAdsByToken = async (params:any) => {
+  try {
+    const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
+
+    
+    const response = await axios.post(`${apiBaseURL}/real-estate/shared-linksBytoken`, params);
+    return response;
+   
+  } catch (error) {
+    console.error("API Error (Get Profile):", error);
+  }
+};
+
+export const subscription_plan_details = async () => {
+  try {const response = await  axios
+    .post(`${apiBaseURL}/subscription_plan_details`,{})
+    return response;
+   
+  } catch (error) {
+    console.error("API Error (Get Profile):", error);
+  }
+};
+
+
+export const adsdelete = async (params:any) => {
+  try {
+    const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
+
+    
+    const response = await axios.post(
+      `${apiBaseURL}/real-estate/ads/delete`,
+      params,
+    );return response;
+   
+  } catch (error) {
+    console.error("API Error (Get Profile):", error);
+  }
+};
+
+export const deleteadsImage = async (params:any) => {
+  try {
+    const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
+    const accessToken = localStorage.getItem("accessToken");
+   
+    
+    const response = await axios.post(
+      `${apiBaseURL}/real-estate/ads/delete-image`,
+      params,  {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );return response;
+   
+  } catch (error) {
+    console.error("API Error (Get Profile):", error);
+  }
+};
+
+
+export const adsaddMultiImage = async (params:any) => {
+  try {
+    const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
+
+    
+    const response = await axios.post(
+      `${apiBaseURL}/real-estate/ads/add-image`,
+      params
+    );return response;
+   
+  } catch (error) {
+    console.error("API Error (Get Profile):", error);
+  }
+};
+export const adsUpdate = async (params:any) => {
+  try {
+    const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
+
+    
+    const accessToken = localStorage.getItem("accessToken");
+    // For editing, the endpoint might be an update endpoint
+    const response = await axios.post(
+      "http://localhost:8069/api/real-estate/ads/update",
+      params,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    
+    
     return response;
    
   } catch (error) {
