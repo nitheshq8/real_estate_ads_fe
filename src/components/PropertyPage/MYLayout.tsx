@@ -51,13 +51,14 @@ const MYLayout = ({
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [companydata, setCompanyData] = useState({ name: "A",logo:'' });
+  const [userData,setUserData]= useState<any>('')
   // const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
-  let userData:any={}
+  
  
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
-      // Your code that uses userData...
+     const userData1:any = JSON.parse(localStorage.getItem("aiduser") || "{}");
+      setUserData(userData1)
     }
   }, []);
   const fetchcompanydetails = useCallback(async () => {

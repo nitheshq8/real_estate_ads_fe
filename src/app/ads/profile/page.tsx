@@ -15,7 +15,7 @@ const ProfilePage = () => {
   const [previewCompanyLogo, setPreviewCompanyLogo] = useState<string | null>(null);
   // State for new password input
   const [newPassword, setNewPassword] = useState("");
-
+const [storedUser,setstoredUser]= useState<any>('')
   // Fetch user profile data
   const fetchProfile = async () => {
     try {
@@ -83,9 +83,10 @@ const ProfilePage = () => {
     e.preventDefault();
     try {
       // Get user_id from 
-      let storedUser:any={}
+      
       if (typeof window !== 'undefined') {
-        storedUser = JSON.parse(localStorage.getItem("aiduser") || "{}");
+       const storedUser1 = JSON.parse(localStorage.getItem("aiduser") || "{}");
+        setstoredUser(storedUser1)
         // Your code that uses userData...
       }
       // Build updated data for user
