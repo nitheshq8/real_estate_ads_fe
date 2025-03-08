@@ -313,7 +313,7 @@ const [storedUser,setstoredUser]= useState<any>('')
             />
           </div>
 
-          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+          <button type="submit" className="bg-blue-600 w-full hover:bg-blue-950 text-white p-2 rounded">
             Save Changes
           </button>
         </form>
@@ -325,9 +325,7 @@ const [storedUser,setstoredUser]= useState<any>('')
               alt="Avatar"
               className="w-32 h-32 border-2 rounded-full object-cover"
             />
-            <button onClick={() => setIsEditing(true)} className="bg-blue-500 text-white px-4 py-2 rounded">
-              Edit Profile & Company
-            </button>
+           
           </div>
           <div>
             <p>
@@ -363,7 +361,11 @@ const [storedUser,setstoredUser]= useState<any>('')
           )}
         </div>
       )}
-
+      {!isEditing ?
+ <button onClick={() => setIsEditing(true)} className="bg-blue-600 w-full hover:bg-blue-950  text-white p-2 rounded">
+              Edit Profile & Company
+            </button>
+            :""}
       <LogoutButton/>
     </div>
   );
