@@ -2,12 +2,13 @@ import axios from "axios";
 import { LocalStorageData, User } from "./types";
 import { error } from "console";
 const isProduction = true; // Change to false for development
-const API_BASE_URL = isProduction?"http://16.24.17.78/api/user":"http://localhost:8069/api/user"
+// https://16.24.17.78/
+const API_BASE_URL = isProduction?"https://16.24.17.78/api/user":"https://localhost:8069/api/user"
 // const API_BASE_URL = "http://localhost:8069/api/user";
 
 export const apiBaseURL = isProduction
-  ? "http://16.24.17.78/api"
-  : "http://localhost:80/api";
+  ? "https://16.24.17.78/api"
+  : "https://localhost:80/api";
 
 // export const imgBaseURL = isProduction
 //   ? "https://portal.abwabalkhair.com"
