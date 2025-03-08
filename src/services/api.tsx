@@ -528,9 +528,8 @@ export const updateMyProfile = async ({updatedData}:any) => {
     if (!userData.user_id) return;
     const response = await axios.post(`${apiBaseURL}/update_user_data`, {
       jsonrpc: "2.0",
-      params: updatedData,
+      params: {...updatedData,user_id:userData.user_id},
     });
-    // Adjust this if your API response structure differs.
     return response;
    
   } catch (error) {
