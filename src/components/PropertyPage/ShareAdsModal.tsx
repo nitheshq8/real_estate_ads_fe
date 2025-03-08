@@ -241,7 +241,7 @@ setError(response?.data?.result?.error.message);
                   className="w-full bg-transparent text-gray-700 outline-none"
                 />
                 <button
-                  onClick={() => copyToClipboard(`http://localhost:3000/${sharedlink}`)}
+                  onClick={() => copyToClipboard(`https://real-estate-ads-fe-cd3a.vercel.app/${sharedlink}`)}
                   className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-950 flex items-center"
                 >
                   {copied ? <FiCheck className="mr-2" /> : <FiCopy className="mr-2" />}
