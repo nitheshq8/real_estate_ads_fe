@@ -112,10 +112,12 @@ const [storedUser,setstoredUser]= useState<any>('')
       const userResponse = await updateMyProfile({ updatedData: updatedUserData });
       const updatedUser = userResponse?.data?.result;
       if (updatedUser) {
+        console.log("updatedUser",updatedUser);
+        
         setUser(updatedUser);
-        if (typeof window !== 'undefined') {
-          localStorage.setItem("aiduser", JSON.stringify(updatedUser.user));
-        }
+        // if (typeof window !== 'undefined') {
+        //   localStorage.setItem("aiduser", JSON.stringify(updatedUser.user));
+        // }
       }
       setNewPassword("");
 
