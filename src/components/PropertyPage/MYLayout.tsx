@@ -38,7 +38,7 @@ const MYLayout = ({
   selectedAds,
   isdetailpage,
   handleAdChange,
-  mysubscriptionPlan
+  mysubscriptionPlan,
 }: {
   children: ReactNode;
   properties?: any;
@@ -46,24 +46,24 @@ const MYLayout = ({
   selectedAds?: any;
   isdetailpage?: boolean;
   handleAdChange: any;
-  mysubscriptionPlan?:any
+  mysubscriptionPlan?: any;
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [companydata, setCompanyData] = useState({ name: "A",logo:'' });
-  const [userData,setUserData]= useState<any>('')
+  const [companydata, setCompanyData] = useState({ name: "A", logo: "" });
+  const [userData, setUserData] = useState<any>("");
   // const userData = JSON.parse(localStorage.getItem("aiduser") || "{}");
-  
- 
+
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-     const userData1:any = JSON.parse(localStorage.getItem("aiduser") || "{}");
-      setUserData(userData1)
+    if (typeof window !== "undefined") {
+      const userData1: any = JSON.parse(
+        localStorage.getItem("aiduser") || "{}"
+      );
+      setUserData(userData1);
     }
   }, []);
   const fetchcompanydetails = useCallback(async () => {
-    const response:any = await getCompanydetails("");
-setCompanyData(response?.result);
-  
+    const response: any = await getCompanydetails("");
+    setCompanyData(response?.result);
   }, []);
 
   useEffect(() => {
@@ -94,31 +94,27 @@ setCompanyData(response?.result);
           <h1 className="text-xl font-bold ml-2">{companydata?.name}</h1>
         </div> */}
         <div className=" m-1 ">
-
-<UserMenu userData={userData} companydata={companydata} />
-</div>
+          <UserMenu userData={userData} companydata={companydata} />
+        </div>
         {/* Desktop View (Hidden on Mobile) */}
         <div className="hidden md:flex items-center  min-w-fit justify-between">
-         
           <PropertyTypeModal />
           <div className="ml-1 flex">
             <SharedLinksTable />
           </div>
           <div className="ml-1 flex">
-            {userData?.is_admin && (
-              <CreateAdModal cities={cities} handleAdChange={handleAdChange} 
-              
-              mysubscriptionPlan={mysubscriptionPlan}
+         
+              <CreateAdModal
+                cities={cities}
+                handleAdChange={handleAdChange}
+                mysubscriptionPlan={mysubscriptionPlan}
               />
-            )}
-          
+           
           </div>
-        
-              <div className=" m-1 ">
 
-              <SubscritionModal/>
-              </div>
-            
+          <div className=" m-1 ">
+            <SubscritionModal />
+          </div>
         </div>
 
         {/* Mobile Menu Button */}
@@ -143,10 +139,8 @@ setCompanyData(response?.result);
               >
                 {item.name}
               </a>
-              
             ))}
           </nav>
-        
         </aside>
 
         {/* Main Content */}
@@ -189,17 +183,19 @@ setCompanyData(response?.result);
                 <IoMdClose />
               </button>
               <nav className="mt-8 space-y-4">
-                <UserMenu userData={userData} companydata={companydata}  />
+                <UserMenu userData={userData} companydata={companydata} />
                 {navItems.map((item, index) => (
                   <a
                     key={index}
                     href={item.url}
-                    className="block p-2 rounded-lg hover:bg-gray-200"
+                    className="block  rounded-lg hover:bg-gray-200"
                   >
-                    {item.name}
+                    {item.name}ii
                   </a>
                 ))}
-  <SubscritionModal/>
+                <SubscritionModal />
+               
+
                 <CreateAdModal
                   cities={cities}
                   handleAdChange={handleAdChange}
@@ -212,14 +208,12 @@ setCompanyData(response?.result);
           </div>
         )}
       </div>
-    
+
       <footer className="bg-white  z-40">
         {/* <Footer/> */}
         <footer className="bg-gray-800 text-white py-6">
           <div className="max-w-4xl mx-auto px-4">
             <div className="flex justify-between items-center">
-           
-
               <div className="space-y-4">
                 {navItems.map((item, index) => (
                   <a
