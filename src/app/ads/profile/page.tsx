@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { fetchMyProfile, updateMyProfile, updateCompanyDetails, getCompanydetails } from "@/services/api";
+import LogoutButton from "@/components/LogoutButton";
 
 const ProfilePage = () => {
   // State for user profile
@@ -360,6 +361,8 @@ const [storedUser,setstoredUser]= useState<any>('')
           )}
         </div>
       )}
+
+      <LogoutButton/>
     </div>
   );
 };
